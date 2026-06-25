@@ -1,0 +1,1388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Travel Journal</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Segoe UI", sans-serif;
+}
+
+:root {
+    --ink: #2d2930;
+    --muted: #706875;
+    --paper: #fffdf9;
+    --blush: #ffe6ef;
+    --peach: #ffd9bd;
+    --mint: #dff7ec;
+    --sky: #dceeff;
+    --rose: #d85d87;
+    --lavender: #efe7ff;
+    --butter: #fff1b8;
+    --shadow: 0 18px 45px rgba(61, 45, 71, 0.13);
+}
+
+body {
+    min-height: 100vh;
+    background:
+        radial-gradient(circle at 12% 8%, rgba(255, 217, 189, 0.65), transparent 28%),
+        radial-gradient(circle at 86% 16%, rgba(220, 238, 255, 0.75), transparent 30%),
+        radial-gradient(circle at 28% 84%, rgba(239, 231, 255, 0.72), transparent 26%),
+        linear-gradient(135deg, #fff8fb 0%, #f7fbff 47%, #fffaf2 100%);
+    color: var(--ink);
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.34;
+    background-image:
+        linear-gradient(rgba(216, 93, 135, 0.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(216, 93, 135, 0.08) 1px, transparent 1px);
+    background-size: 34px 34px;
+    z-index: -1;
+}
+
+/* HERO */
+.hero {
+    min-height: 54vh;
+    background:
+        linear-gradient(135deg, rgba(216, 93, 135, 0.42), rgba(66, 143, 189, 0.28)),
+        url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e') center/cover;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    text-align: center;
+    padding: 48px 22px;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero::before {
+    content: "postcards  photos  tiny adventures";
+    position: absolute;
+    z-index: 1;
+    top: 28px;
+    padding: 8px 16px;
+    border: 1px solid rgba(255,255,255,0.65);
+    border-radius: 999px;
+    background: rgba(255,255,255,0.18);
+    backdrop-filter: blur(8px);
+    color: rgba(255,255,255,0.92);
+    font-size: 13px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.hero::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    height: 80px;
+    background: linear-gradient(to top, #fff8fb, transparent);
+}
+
+.hero h2 {
+    position: relative;
+    z-index: 1;
+    max-width: 760px;
+    font-size: clamp(36px, 7vw, 72px);
+    line-height: 1;
+    font-weight: 800;
+    text-shadow: 0 6px 22px rgba(0,0,0,0.24);
+}
+
+.hero p {
+    position: relative;
+    z-index: 1;
+    margin-top: 16px;
+    max-width: calc(100vw - 32px);
+    font-size: 18px;
+    line-height: 1.6;
+    white-space: nowrap;
+    color: rgba(255,255,255,0.92);
+    text-shadow: 0 4px 18px rgba(0,0,0,0.22);
+}
+
+.hero-tags {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 22px;
+}
+
+.hero-tags span {
+    background: rgba(255,255,255,0.88);
+    color: var(--rose);
+    padding: 8px 14px;
+    border-radius: 999px;
+    font-size: 14px;
+    font-weight: 700;
+    box-shadow: 0 8px 22px rgba(0,0,0,0.12);
+}
+
+.map-section {
+    width: min(1180px, calc(100% - 32px));
+    margin: -34px auto 46px;
+    position: relative;
+    z-index: 3;
+    filter: drop-shadow(0 20px 45px rgba(61, 45, 71, 0.12));
+}
+
+.map-intro {
+    background: rgba(255, 253, 249, 0.94);
+    border: 1px solid rgba(255,255,255,0.9);
+    border-radius: 8px 8px 0 0;
+    box-shadow: var(--shadow);
+    padding: 22px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.map-intro::before,
+.map-intro::after {
+    content: "";
+    position: absolute;
+    width: 120px;
+    height: 32px;
+    background: rgba(255, 241, 184, 0.8);
+    top: 16px;
+    transform: rotate(-8deg);
+    border-radius: 4px;
+}
+
+.map-intro::before {
+    left: -34px;
+}
+
+.map-intro::after {
+    right: -34px;
+    transform: rotate(8deg);
+}
+
+.map-intro h2 {
+    color: var(--rose);
+    font-size: clamp(26px, 4vw, 40px);
+    margin-bottom: 8px;
+}
+
+.map-intro p {
+    color: var(--muted);
+    line-height: 1.6;
+}
+
+#travelMap {
+    height: 520px;
+    width: 100%;
+    border-radius: 0 0 8px 8px;
+    box-shadow: var(--shadow);
+    border: 12px solid rgba(255, 253, 249, 0.96);
+    border-top: 0;
+    background: linear-gradient(135deg, #ffeef6, #e7f7ff);
+}
+
+#travelMap .leaflet-tile {
+    filter: saturate(1.45) brightness(1.08) contrast(0.92) hue-rotate(350deg);
+}
+
+#travelMap .leaflet-control-zoom {
+    border: 0;
+    box-shadow: 0 10px 24px rgba(61, 45, 71, 0.16);
+}
+
+#travelMap .leaflet-control-zoom a {
+    background: #fff8fb;
+    color: var(--rose);
+    border-color: rgba(216, 93, 135, 0.12);
+    font-weight: 800;
+}
+
+#travelMap .leaflet-control-attribution {
+    background: rgba(255, 253, 249, 0.82);
+    color: var(--muted);
+    border-radius: 999px 0 0 0;
+    padding: 4px 8px;
+}
+
+.map-fallback {
+    height: 100%;
+    display: grid;
+    place-items: center;
+    padding: 24px;
+    color: var(--muted);
+    text-align: center;
+}
+
+.travel-pin {
+    width: 30px;
+    height: 30px;
+    border-radius: 50% 50% 50% 6px;
+    background: linear-gradient(135deg, #ff5f9f, #ffc567);
+    border: 3px solid white;
+    box-shadow:
+        0 8px 18px rgba(65, 38, 70, 0.28),
+        0 0 0 8px rgba(255, 230, 239, 0.45),
+        0 0 0 14px rgba(223, 247, 236, 0.25);
+    transform: rotate(-45deg);
+}
+
+.travel-pin::after {
+    content: "";
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: white;
+    left: 7px;
+    top: 7px;
+}
+
+.map-popup {
+    width: 230px;
+    text-align: center;
+    position: relative;
+    padding: 8px 8px 10px;
+    border-radius: 18px;
+    background:
+        radial-gradient(circle at 12% 0%, rgba(255, 241, 184, 0.85), transparent 38%),
+        linear-gradient(135deg, #fff8fb, #f1fbff 58%, #fff7df);
+    overflow: hidden;
+}
+
+.map-popup::before {
+    content: "visited";
+    position: absolute;
+    top: 12px;
+    left: -26px;
+    transform: rotate(-32deg);
+    background: rgba(255, 255, 255, 0.86);
+    color: var(--rose);
+    padding: 5px 30px;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    box-shadow: 0 6px 14px rgba(61, 45, 71, 0.09);
+}
+
+.map-popup img {
+    width: 100%;
+    height: 138px;
+    object-fit: contain;
+    background: linear-gradient(135deg, #fff3f7, #edf8ff);
+    border-radius: 14px;
+    margin-bottom: 12px;
+    border: 7px solid white;
+    box-shadow: 0 10px 22px rgba(61, 45, 71, 0.14);
+}
+
+.map-popup h3 {
+    font-size: 18px;
+    color: var(--ink);
+    margin-bottom: 7px;
+    line-height: 1.2;
+}
+
+.map-popup p {
+    font-size: 13px;
+    color: #9f3f66;
+    background: linear-gradient(90deg, var(--blush), #fff1b8);
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-weight: 700;
+}
+
+.map-popup .popup-note {
+    display: block;
+    margin-top: 9px;
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.4;
+    background: rgba(255,255,255,0.64);
+    border-radius: 12px;
+    padding: 8px 10px;
+}
+
+.leaflet-popup-content-wrapper {
+    border-radius: 22px;
+    box-shadow: 0 18px 44px rgba(35, 22, 40, 0.22);
+    background: linear-gradient(135deg, #fffdf9, #fff3f8);
+    border: 1px solid rgba(255,255,255,0.9);
+}
+
+.leaflet-popup-content {
+    margin: 0;
+}
+
+.leaflet-popup-tip {
+    background: #fff3f8;
+}
+
+.leaflet-container a.leaflet-popup-close-button {
+    top: 8px;
+    right: 8px;
+    width: 28px;
+    height: 28px;
+    display: grid;
+    place-items: center;
+    border-radius: 999px;
+    background: rgba(216, 93, 135, 0.13);
+    color: var(--rose);
+    font-size: 20px;
+    line-height: 28px;
+    z-index: 2;
+}
+
+/* GRID */
+.container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 24px;
+    width: min(1180px, calc(100% - 32px));
+    margin: 0 auto;
+    padding: 0 0 52px;
+    position: relative;
+    z-index: 2;
+}
+
+.container::before {
+    content: "travel cards";
+    grid-column: 1 / -1;
+    justify-self: center;
+    color: var(--rose);
+    background: rgba(255, 253, 249, 0.9);
+    border: 1px solid rgba(255,255,255,0.95);
+    box-shadow: 0 10px 24px rgba(61, 45, 71, 0.1);
+    border-radius: 999px;
+    padding: 8px 18px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+/* CARD */
+.card {
+    background: rgba(255, 253, 249, 0.92);
+    border: 1px solid rgba(255,255,255,0.9);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    cursor: pointer;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    position: relative;
+    outline: 1px solid rgba(255, 230, 239, 0.65);
+    outline-offset: -8px;
+}
+
+.card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255,230,239,0.45), rgba(223,247,236,0.24));
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+}
+
+.card:hover {
+    transform: translateY(-7px);
+    box-shadow: 0 24px 55px rgba(61, 45, 71, 0.18);
+}
+
+.card:hover::before {
+    opacity: 1;
+}
+
+.card img {
+    width: 100%;
+    height: 210px;
+    object-fit: contain;
+    object-position: center;
+    background: linear-gradient(135deg, #fff3f7, #edf8ff);
+    padding: 10px;
+    border-bottom: 1px solid rgba(216, 93, 135, 0.08);
+}
+
+.card-content {
+    padding: 18px;
+    position: relative;
+    text-align: center;
+}
+
+.card h3 {
+    font-size: 21px;
+    margin-bottom: 8px;
+    color: var(--ink);
+}
+
+.card h3::after {
+    content: "";
+    display: block;
+    width: 34px;
+    height: 3px;
+    margin: 8px auto 0;
+    border-radius: 999px;
+    background: linear-gradient(90deg, var(--rose), var(--peach));
+}
+
+.card p {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.5;
+}
+
+/* MODAL */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    backdrop-filter: blur(10px);
+    background: rgba(48, 35, 52, 0.58);
+    justify-content: center;
+    align-items: center;
+    padding: 18px;
+}
+
+.modal-content {
+    background: var(--paper);
+    width: 80%;
+    max-width: 900px;
+    max-height: 85vh;
+    overflow-y: auto;
+    padding: 28px;
+    position: relative;
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.95);
+    box-shadow: 0 28px 80px rgba(35, 22, 40, 0.28);
+    outline: 1px dashed rgba(216, 93, 135, 0.22);
+    outline-offset: -10px;
+}
+
+.modal-content h2 {
+    margin: 18px 0 14px;
+    font-size: clamp(28px, 5vw, 42px);
+    color: var(--rose);
+}
+
+.modal-content p {
+    color: var(--ink);
+    font-size: 16px;
+    line-height: 1.8;
+}
+
+.university-list {
+    margin: 10px 0 14px;
+    padding-left: 28px;
+    color: var(--ink);
+    font-size: 16px;
+    line-height: 1.8;
+}
+
+.close {
+    position: sticky;
+    top: 0;
+    margin-left: auto;
+    z-index: 5;
+    width: 38px;
+    height: 38px;
+    display: grid;
+    place-items: center;
+    border-radius: 999px;
+    background: rgba(255, 230, 239, 0.96);
+    color: var(--rose);
+    font-size: 28px;
+    cursor: pointer;
+    line-height: 1;
+    box-shadow: 0 8px 22px rgba(61, 45, 71, 0.16);
+}
+
+/* FOOTER */
+footer {
+    text-align: center;
+    padding: 24px 20px;
+    background: #2d2930;
+    color: #fff7fb;
+    margin-top: 12px;
+}
+
+@media(max-width: 900px){
+    .container {
+        grid-template-columns: 1fr;
+    }
+
+    .map-section {
+        margin-top: -22px;
+    }
+}
+
+.trip-gallery{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+    gap:10px;
+    margin:22px 0;
+}
+
+.trip-gallery img{
+    width:100%;
+    height:160px;
+    object-fit:contain;
+    object-position:center;
+    background:linear-gradient(135deg, #fff3f7, #f0fbf5);
+    border: 6px solid white;
+    border-radius:8px;
+    box-shadow: 0 10px 28px rgba(61, 45, 71, 0.12);
+    transition:transform 0.25s ease, box-shadow 0.25s ease;
+    transform: rotate(-0.6deg);
+}
+
+.trip-gallery img:hover{
+    transform:scale(1.03) rotate(0deg);
+    box-shadow: 0 16px 34px rgba(61, 45, 71, 0.18);
+}
+
+.trip-gallery img:nth-child(even) {
+    transform: rotate(0.6deg);
+}
+
+.trip-gallery img:nth-child(even):hover {
+    transform:scale(1.03) rotate(0deg);
+}
+
+.vegas-gallery {
+    grid-template-columns:repeat(auto-fit,minmax(120px,1fr));
+}
+
+.vegas-gallery img {
+    height:125px;
+}
+
+.image-error {
+    display: grid;
+    place-items: center;
+    min-height: 120px;
+    padding: 18px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #fff3f7, #edf8ff);
+    color: var(--muted);
+    text-align: center;
+    font-size: 14px;
+    border: 1px dashed rgba(216, 93, 135, 0.28);
+}
+
+.photo-note {
+    margin: 12px 0 22px;
+    padding: 12px 14px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #fff3f7, #fff9df);
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.5;
+    border: 1px dashed rgba(216, 93, 135, 0.28);
+}
+
+.photo-viewer {
+    display: none;
+    position: fixed;
+    z-index: 2000;
+    inset: 0;
+    background: rgba(29, 22, 34, 0.92);
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+}
+
+.photo-viewer img {
+    max-width: 88vw;
+    max-height: 84vh;
+    object-fit: contain;
+    border-radius: 8px;
+    background: #fff;
+    padding: 8px;
+    box-shadow: 0 28px 80px rgba(0,0,0,0.4);
+}
+
+.photo-close,
+.photo-nav {
+    position: absolute;
+    border: 0;
+    color: white;
+    background: rgba(255,255,255,0.2);
+    cursor: pointer;
+    border-radius: 999px;
+    transition: 0.2s;
+}
+
+.photo-close:hover,
+.photo-nav:hover {
+    background: rgba(255,255,255,0.3);
+}
+
+.photo-close {
+    top: 20px;
+    right: 20px;
+    width: 44px;
+    height: 44px;
+    font-size: 30px;
+    line-height: 44px;
+}
+
+.photo-nav {
+    top: 50%;
+    transform: translateY(-50%);
+    width: 52px;
+    height: 52px;
+    font-size: 38px;
+    line-height: 52px;
+}
+
+.photo-prev {
+    left: 20px;
+}
+
+.photo-next {
+    right: 20px;
+}
+
+.photo-count {
+    position: absolute;
+    bottom: 18px;
+    color: white;
+    background: rgba(255,255,255,0.2);
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 14px;
+}
+
+@media(max-width: 700px){
+    .hero {
+        min-height: 46vh;
+    }
+
+    .hero p {
+        font-size: 14px;
+        white-space: nowrap;
+    }
+
+    .modal-content {
+        width: 100%;
+        padding: 18px;
+    }
+
+    #travelMap {
+        height: 430px;
+        border-width: 7px;
+    }
+
+    .photo-viewer {
+        padding: 12px;
+    }
+
+    .photo-viewer img {
+        max-width: 94vw;
+        max-height: 78vh;
+    }
+
+    .photo-nav {
+        width: 42px;
+        height: 42px;
+        font-size: 30px;
+        line-height: 42px;
+    }
+}
+
+</style>
+</head>
+
+<body>
+
+<section class="hero">
+    <h2>Prisha's Travel Journal</h2>
+    <br>
+    <p>Little city notes, favorite views, and memories collected along the way.</p>
+    <!-- <div class="hero-tags">
+        <span>city walks</span>
+        <span>coastal drives</span>
+        <span>tiny souvenirs</span>
+    </div> -->
+</section>
+
+<!-- ================= MAP ================= -->
+<section class="map-section">
+    <div class="map-intro">
+        <h2>Places I Visited</h2>
+        <p>Tap a pin to see the stop, a little photo, and where it belongs in the journey.</p>
+    </div>
+    <div id="travelMap">
+        <div class="map-fallback">Loading the travel map...</div>
+    </div>
+</section>
+
+<!-- ================= CARDS ================= -->
+<section class="container">
+
+<!-- SAN FRANCISCO -->
+<div class="card" onclick="openBlog(this)">
+    <img src="static/sf/golden gate pfp.jpeg" alt="San Francisco trip photo">
+    <div class="card-content">
+        <h3>San Francisco</h3>
+        <p>A Day in Fog City</p>
+    </div>
+
+   <div class="full-story" style="display:none;">
+        <div class="trip-gallery">
+            <img src="static/sf/golden night view.jpg" alt="Golden Gate Bridge night view">
+            <img src="static/sf/ghiradheli.jpg" alt="Ghirardelli Square">
+            <img src="static/sf/palace of fine.jpg" alt="Palace of Fine Arts">
+            <img src="static/sf/union sq.jpeg" alt="Union Square">
+            
+            <img src="static/sf/golden gate 2pfp.jpg" alt="Golden Gate Bridge">
+           
+            <img src="static/sf/IMG_6770.JPG.jpeg" alt="San Francisco trip memory">
+            <img src="static/sf/IMG_6817.JPG.jpeg" alt="San Francisco trip memory">
+            <img src="static/sf/WhatsApp Image 2026-06-22 at 10.49.10 PM (2).jpeg" alt="San Francisco trip memory">
+            <img src="static/sf/WhatsApp Image 2026-06-22 at 10.49.10 PM (5).jpeg" alt="San Francisco trip memory">
+            <img src="static/sf/WhatsApp Image 2026-06-22 at 10.49.10 PM (6).jpeg" alt="San Francisco trip memory">
+        </div>
+   
+
+        <p>
+Our day in San Francisco started with one of the most interesting streets I’ve ever seen Lombard Street. It’s that super curvy road with flowers on both sides, and honestly it looked almost unreal in person. I even opened the sunroof of the car while going down, and that whole moment just felt really good slow, windy, and kind of unforgettable.
+After that we stopped for lunch and took a short break. Then we went to Ghirardelli Square. That chocolate place was really nice especially the ice cream, it was genuinely so good. Just a simple stop but I enjoyed it a lot.
+Next we reached Union Square. It was very busy, lots of people and energy everywhere. From there we took e-bikes, and that honestly turned out to be one of the most fun parts of the day. Riding through the city like that felt really free and easy. We also passed through Chinatown San Francisco which was super colorful and crowded.
+After that we also took a tram ride, which had a very classic San Francisco feel simple but nice in its own way.
+Then we went to Pier 39. It was quite crowded but still really fun. We clicked some pictures in a photo booth there which turned out pretty funny. From there you could also see Alcatraz Island in the distance, which felt kind of crazy knowing its history.
+Later in the day we went to the Golden Gate Bridge definitely the highlight. The weather was cloudy, so the bridge kept going in and out of the fog. But whenever it cleared, it looked unreal. We also saw some details about how it was built and the engineering behind it, which made it even more interesting. We stopped for coffee nearby because it was cold and windy, and it just matched the vibe perfectly.
+At the end we visited the Palace of Fine Arts. That place felt really calm compared to the rest of the day. It was also familiar because it has appeared in movies like My Name Is Khan.
+        </p>
+    </div>
+</div>
+
+<!-- NEW YORK -->
+<div class="card" onclick="openBlog(this)">
+    <img src="static/nyc/nyc cover.JPG" alt="NYC trip photo">
+    <div class="card-content">
+        <h3>New York</h3>
+        <p>City of Skyscrapers</p>
+    </div>
+
+    <div class="full-story" style="display:none;">
+        <div class="trip-gallery">
+            <img src="static/nyc/cable car.JPG" alt="Roosevelt Island tram">
+            <img src="static/nyc/empire state.jpg" alt="Empire State Building">
+            <img src="static/nyc/IMG_7847.JPG.jpeg" alt="New York trip memory">
+            <img src="static/nyc/IMG_8225.JPG.jpeg" alt="New York trip memory">
+            <img src="static/nyc/WhatsApp Image 2026-06-22 at 10.49.10 PM.jpeg" alt="New York trip memory">
+            <img src="static/nyc/WhatsApp Image 2026-06-22 at 10.49.10 PM (1).jpeg" alt="New York trip memory">
+        </div>
+
+        <p>
+
+New York was the second destination of my trip and honestly one of the most memorable ones. It was my first trip with my sister and brother-in-law, and also my first domestic flight in the USA. We took a red-eye flight to JFK Airport and reached New York in the afternoon.
+After landing, we had lunch and then went back to the airport to pick up my brother. Later, we drove to our relatives' place in New Jersey, where we were staying.
+<br>Day 1</br>
+The next morning, we took a bus from New Jersey to New York. The bus dropped us near Times Square, and finally seeing Times Square in real life felt exciting. It was crowded, bright, and exactly how you see it in videos and movies.
+From there, we walked around 5th Avenue and explored different stores. One thing that really caught my attention was the giant Louis Vuitton suitcase installation. It looked huge and was hard to miss.
+After that, we took a cab to Central Park.
+And wow... Central Park was beautiful.
+I had seen so many photos and videos before, but being there felt completely different. There were so many famous spots. I don't remember all of them, but I instantly recognized the Bethesda Fountain from Kal Ho Naa Ho. It felt funny and exciting standing at a place I had only seen in movies.
+After exploring the park, we took the Roosevelt Island Tramway. The views during the ride were amazing. Seeing the city from above was such a cool experience.
+Later, we took a ferry and honestly, this was one of my favorite parts of the day. The skyline, the bridges, the water, everything looked so beautiful. It's one of those experiences that's difficult to describe properly.
+After the ferry ride, we explored the World Trade Center area, saw the Charging Bull and the Fearless Girl statue. We even got one of our pictures printed on an old newspaper-style souvenir, which was pretty fun.
+By the end of the day, we were literally rushing to catch the last bus back to New Jersey. Thankfully, we made it on time. We were tired but had already packed so much into the first day.
+<br>Day 2</br>
+The next day was all about the Statue of Liberty.
+We got ready early in the morning and headed for the ferry to Liberty Island. While we were on the ferry, it suddenly started raining. Everyone quickly rushed downstairs to avoid getting wet. The rain lasted only a few minutes, but it made the whole ride even more memorable.
+As soon as the rain stopped, everyone ran back to the upper deck to enjoy the views again.
+When we reached Liberty Island, we spent a lot of time taking photos and videos. Since it was summer, there were tourists everywhere, and finding a good photo spot wasn't easy.
+While we were there, my sister told me that if we had planned the trip a month earlier, we could have booked tickets to go inside the crown of the Statue of Liberty. I immediately wished we had known that before. The view from there must be incredible.
+We visited a few more places during the day, but the best part was still left.
+After the Statue of Liberty, we visited the Vessel. I had seen it many times in pictures and on social media, but seeing it in real life was different. The structure looks really unique and huge when you're standing next to it. Its honeycomb-like design and the way the staircases rise and connect make it stand out even more. We spent some time there taking pictures and just looking at the design.
+Then we headed towards another iconic landmark the Brooklyn Bridge.
+Seeing it in person was amazing. The bridge is incredibly well built, and walking across it while looking at the Manhattan skyline was such a nice experience. What made it even more special for me was that I remembered seeing it in the Bollywood movie Kal Ho Naa Ho, it was exciting to stand at a place that had appeared in one of my favorite movies.
+We also visited DUMBO (Down Under the Manhattan Bridge Overpass), one of the most popular photo spots in New York. This is the place where you can see the bridge perfectly framed between two buildings. It was crowded, but the view was absolutely worth it.
+Nearby, we explored Brooklyn Bridge Park and saw the famous Jane's Carousel. The area had beautiful views of the Manhattan skyline, and it was a nice place to relax for a while after all the walking. Between the bridge views, the waterfront, and the skyline, this ended up being one of my favorite parts of the day.
+<br>That night, we went back to Times Square.</br>
+What I didn't know was that my sister and brother-in-law had planned a surprise for me. Suddenly, our photo appeared on a Times Square billboard.
+I was genuinely shocked.
+Out of everything we did in New York, that moment is probably the one I'll remember the most. It was completely unexpected and made the trip even more special.
+We finally reached home around 2 AM.
+<br>NEXT STOP: DC
+<br>Day 4</br>
+After getting back from D.C. the previous night, we decided to keep the next day pretty relaxed. The last few days had been hectic, so it felt good to slow down a little. We only had a couple of places left to visit in New York before heading to our next destination.
+One of them was The Edge skyscraper, and honestly, it was one of the coolest experiences of the trip.
+As we entered the building and got into the elevator, it started going up incredibly fast. The higher we went, the more exciting it felt. When the elevator doors finally opened, we were greeted with an unbelievable view of New York City.
+Standing on The Edge's observation deck felt surreal. We could see skyscrapers all around us, the river flowing through the city, tiny cars moving on the roads below, and the famous New York skyline stretching into the distance. It was one of those moments where you just stop, look around, and appreciate how incredible the view is.
+Of course, we spent a lot of time taking pictures and videos because a view like that definitely deserved it.
+Compared to the previous days, this day was much more relaxed, and I actually enjoyed that. It gave us time to soak in the city one last time before leaving.
+After visiting a few more places, we packed our bags and said goodbye to New York.
+<br>NEXT STOP: Boston</br>
+        </p>
+    </div>
+</div>
+
+<!-- BOSTON -->
+<div class="card" onclick="openBlog(this)">
+    <img src="static/boston/boston cover skyline.JPG" alt="Boston trip photo">
+    <div class="card-content">
+        <h3>Boston</h3>
+        <p>From Land to Water: Boston Duck Tour</p>
+    </div>
+
+    <div class="full-story" style="display:none;">
+        <div class="trip-gallery">
+            <img src="static/boston/building boston.JPG" alt="Boston building">
+            <img src="static/boston/lincon.JPG" alt="Boston landmark">
+            <img src="static/boston/duck in water.JPG" alt="Boston Duck Tour on water">
+            <img src="static/boston/duck in water lake.JPG" alt="Boston Duck Tour lake view">
+        </div>
+
+
+        <p>We reached Boston in the evening from New York. Since it was already getting late, we didn't do much that day and just rested for the next day's plans.
+The next morning, we went for the Boston Duck Tour. It is very famous because it takes you around the city on both land and water while covering many of the main attractions. There was also a tour guide who kept explaining the history of different places and sharing interesting facts throughout the ride.
+My favorite part was when the vehicle entered the water. They asked if anyone wanted to drive, and a few people got the chance. Whoever drove received a Boston Duck Tour sticker, which was a fun little souvenir to take home.
+After the tour, we visited Northeastern University, where my brother-in-law completed his master's degree. It was nice to see the campus and the place where he studied.
+That was pretty much our day in Boston. Later, we headed to the airport and took our flight back to San Francisco. Even though it was a short trip, it was a fun experience and a nice way to end our journey.</p>
+    </div>
+</div>
+
+<!-- WASHINGTON DC -->
+<div class="card" onclick="openBlog(this)">
+    <img src="static/dc/dc lincon.JPG" alt="DC trip photo">
+    <div class="card-content">
+        <h3>Washington DC</h3>
+        <p>Historic city visit</p>
+    </div>
+
+    <div class="full-story" style="display:none;">
+        <div class="trip-gallery">
+            <img src="static/dc/dc house 2.JPG" alt="Washington DC building">
+            <img src="static/dc/dc house.JPG" alt="Washington DC building">
+            <img src="static/dc/dc river.JPG" alt="Washington DC river view">
+            <img src="static/dc/world war2 memo.png" alt="World War II Memorial">
+            <img src="static/dc/white house.JPG" alt="White House">
+        </div>
+        
+        <p>
+<br>Day 3</br>
+After sleeping for only a few hours, we woke up early and headed to Washington, D.C.
+The day before had been hectic, but we didn't want to waste any time. We explored the city using e-bikes and visited famous places like the Lincoln Memorial, the White House, and several other historic landmarks.
+It was a different vibe compared to New York—less crowded and more focused on history but I really enjoyed it. Riding around the city and stopping at different monuments made the experience even better.
+        </p>
+    </div>
+</div>
+
+<!-- VEGAS -->
+<div class="card" onclick="openBlog(this)">
+    <img src="static/vegas/vegas cover.jpg" alt="Vegas trip photo">
+    <div class="card-content">
+        <h3>Vegas</h3>
+        <p>Lights, shows & adventure</p>
+    </div>
+
+    <div class="full-story" style="display:none;">
+        
+        <div class="trip-gallery vegas-gallery">
+            <img src="static/vegas/vegas stadium.jpg" alt="Las Vegas stadium">
+            <img src="static/vegas/postcard from earth.jpg" alt="Postcard from Earth">
+            
+            <img src="static/vegas/venice .jpeg" alt="The Venetian Las Vegas">
+            <img src="static/vegas/fountain las vegas.jpg" alt="Bellagio Fountain">
+            <img src="static/vegas/vegas statue.jpg" alt="Las Vegas statue">
+            <img src="static/vegas/effile tower.jpg" alt="Eiffel Tower replica">
+            <img src="static/vegas/festuvals.jpg" alt="Las Vegas festival display">
+        </div>
+
+
+        <p>
+After coming back to Fremont, we already had our Las Vegas trip planned. This time the group was even bigger around 7 of us were going together, which made it even more exciting.
+<br>Day 1</br>
+We boarded our flight and as we got closer to Nevada, I couldn't stop looking out of the window. The view completely changed compared to California. All I could see were mountains, rocky landscapes, and desert-like terrain stretching for miles. It was my first time seeing that kind of scenery from a plane.
+After landing in Las Vegas, we headed straight to our hotel The Paris Las Vegas.
+The hotel itself felt like a mini Paris. The streets, architecture, cafés, and of course the Eiffel Tower replica made it feel like we had stepped into another country. We spent some time resting before heading out in the evening.
+For dinner, we decided to explore the Las Vegas Strip as well. One of our first stops was the High Roller. Before visiting, I thought it would be like a normal giant wheel, but it was much more than that. The cabins were huge and comfortable, and as it slowly moved higher, we got amazing views of the entire city. Seeing Las Vegas lit up at night from above was such a cool experience.
+After that, we walked around the Strip, explored nearby hotels, and enjoyed the lively atmosphere. Everywhere you looked there were lights, music, and people having fun. It felt like the city never slept.
+<br>Day 2</br>
+One thing I loved most about Las Vegas was how every hotel had a completely different theme and vibe. It almost felt like visiting different parts of the world without leaving the city.
+We started the day by visiting Madame Tussauds. The wax statues were so realistic that sometimes it was hard to tell whether it was a statue or an actual person standing there. We spent quite a lot of time taking pictures with different celebrities and famous personalities.
+After that, we visited The Venetian. The hotel was beautiful and probably one of my favorites. We took the famous gondola ride inside the hotel and explored the surroundings. The canals, bridges, painted sky ceiling, and architecture really made it feel like we were walking through Venice.
+But the highlight of the day was still waiting.
+In the evening, my sister and brother-in-law surprised us with a helicopter ride over Las Vegas.
+When we reached the helipad, I requested the staff if it was possible for me to sit near the pilot. I honestly didn't expect it to happen, but somehow they arranged it.
+I was so excited.
+This was my first helicopter ride ever, and sitting near the front made it even more special. As soon as we took off, the entire city lit up beneath us. From above, we could clearly see the famous hotels, the Sphere, stadiums, and the bright Las Vegas Strip glowing in the night.
+The view was absolutely unreal.
+It's hard to explain how happy I felt at that moment. It was one of those experiences that you know you'll remember for a very long time.
+After the ride, we headed back towards the hotel and explored a few nearby places. Near our hotel, we watched the famous Bellagio Fountain Show. Hundreds of people had gathered just to watch it. The combination of music, lights, and perfectly synchronized water fountains was beautiful to watch.
+<br>Day 3</br>
+After an amazing previous day, we were excited for one of the attractions I had been looking forward to the most — The Sphere.
+We watched Postcard from Earth, and honestly, the experience was on another level.
+The visuals were so realistic that it genuinely felt like we were inside the scenes rather than watching a screen. But what impressed me even more was the Sphere itself. The technology was incredible. The seats moved and added effects that matched what was happening on screen, making the experience even more immersive.
+The documentary showcased nature, landscapes, cultures, festivals, and cities from around the world. One moment you felt like you were standing in a desert, and the next you were surrounded by oceans, forests, or city skylines.
+One of my favorite parts was seeing India featured. Watching Mumbai's skyline, Marine Drive, Chhatrapati Shivaji Terminus, and festivals like Diwali and Holi on such a massive screen made me feel proud and excited at the same time.
+The entire experience was unlike anything I had ever seen before.
+If I could give one small piece of advice, it would be this: whenever you visit a place that has a documentary or immersive show, don't skip it. Sometimes those experiences turn out to be even more memorable than the tourist attractions themselves.
+And if you've ever watched Postcard from Earth at the Sphere, you'll probably understand exactly why I can't stop talking about it.
+        </p>
+    </div>
+</div>
+
+
+<!-- Carmal by the sea -->
+<div class="card" onclick="openBlog(this)">
+    <img src="static/carmel by sea/Carmel-by-the-Sea-Credit_SeeMonterey.jpg" alt="Carmel by the Sea trip photo">
+    <div class="card-content">
+        <h3>Carmel by the Sea</h3>
+        <p>Straight out of a fairy tale</p>
+    </div>
+
+    <div class="full-story" style="display:none;">
+        <div class="trip-gallery">
+            <img src="static/carmel by sea/23-Carmel-Downtown-Walking-Tour-Valentine-Sculpture.webp" alt="Carmel downtown sculpture">
+            <img src="static/carmel by sea/istockphoto-1357206849-612x612.jpg" alt="Carmel by the Sea street view">
+        </div>
+
+        <p>Our trip to Half Moon Bay was actually a random evening plan. We left around 5 PM and reached there at about 7:15 PM. The drive itself was really nice. The road was covered with tall trees on both sides, and for some time it reminded me of the Big Sur route. The only difference was that instead of the ocean, there were forests and giant trees all around.
+When we reached the beach, we put down our chairs and mat and just sat there for a while. The weather was nice, and it felt good to just relax and listen to the waves. I clicked a lot of photos there, especially because it was almost sunset time and the lighting was so good. Every picture was coming out amazing. You can definitely call me a photoholic!
+We were hoping to see the sunset, but since it was summer in California, the sun sets starts around 8:30 PM and we had to leave before that. Even though we missed the sunset, the beach looked beautiful and the view was worth the drive.
+After that, we had dinner at an Indian restaurant and then went to Palo Alto for ice cream. We visited Salt & Straw, and there was literally a line outside the store even at around 10 PM. They only had a couple of eggless options, but both were really good. The texture of the ice cream was what stood out to me the most ,very smooth and creamy. It was probably one of the best ice creams I had during the trip.
+It was a short trip and not something we had planned in advance, but I'm glad we went. The drive, the beach, and of course the ice cream made it a really nice evening.
+</p>
+    </div>
+</div>
+
+<!-- bixsur -->
+<div class="card" onclick="openBlog(this)">
+    <img src="static/bixsur/bixsur cover.JPG" alt="Big Sur trip photo">
+    <div class="card-content">
+        <h3>Big Sur</h3>
+        <p>Along California's Most Scenic Coast</p>
+    </div>
+
+    <div class="full-story" style="display:none;">
+        <div class="trip-gallery">
+            <img src="static/bixsur/bixsur1.JPG" alt="Big Sur coastline">
+            <img src="static/bixsur/bixsur 2.JPG" alt="Big Sur view">
+            <img src="static/bixsur/bixsur 3.JPG" alt="Big Sur road view">
+            <img src="static/bixsur/bixsur 4.JPG" alt="Big Sur bridge view">
+            <img src="static/bixsur/IMG_7260.JPG.jpeg" alt="Big Sur trip memory">
+            <img src="static/bixsur/WhatsApp Image 2026-06-22 at 10.49.10 PM (3).jpeg" alt="Big Sur trip memory">
+            <img src="static/bixsur/WhatsApp Image 2026-06-22 at 10.49.10 PM (4).jpeg" alt="Big Sur trip memory">
+        </div>
+
+        <p>One of the places I was most excited to visit was Bixby Creek Bridge(Bixby Bridge). Seeing such a huge bridge standing high above the ocean was incredible. It is around 260 feet above sea level, and I kept wondering how people managed to build something like that in such a difficult location. The bridge itself looked beautiful against the cliffs and the ocean, which is probably why it is one of the most photographed spots in California.
+After that, we visited Pfeiffer Big Sur State Park. The park was full of giant redwood trees. Standing next to them was amazing because they are so tall and have been around for hundreds and even thousands of years. Pictures really don't do them justice.
+But honestly, one of the best parts of Big Sur was the drive itself. Driving along the coastal road with the ocean on one side and mountains on the other was such a beautiful experience. Everywhere we looked there was a different view cliffs, forests, beaches, and the endless blue ocean.
+The whole drive felt so fresh and peaceful. The weather, the views, and being surrounded by nature made it one of my favorite parts of the trip. Big Sur is one of those places where the journey is just as enjoyable as the destination.</p>
+    </div>
+</div>
+
+<!-- Point reyes -->
+<div class="card" onclick="openBlog(this)">
+    <img src="static/point reyes/point reyes cover.JPG" alt="Point Reyes trip photo">
+    <div class="card-content">
+        <h3>Point Reyes </h3>
+        <p>Wind, Waves & a Lighthouse</p>
+    </div>
+
+    <div class="full-story" style="display:none;">
+        <div class="trip-gallery">
+            <img src="static/point reyes/light house.png" alt="Point Reyes lighthouse">
+            <img src="static/point reyes/point rayes road veiw.JPG" alt="Point Reyes road view">
+            <img src="static/point reyes/point reyes sea.JPG" alt="Point Reyes sea view">
+            <img src="static/point reyes/point reyes under tree.png" alt="Point Reyes trees">
+            <img src="static/point reyes/stairs point.JPG" alt="Point Reyes lighthouse stairs">
+        </div>
+
+        <p>Point Reyes was one of the coolest places we visited during the trip. The weather was amazing cold, cozy, and very windy. In fact, the wind was so strong that sometimes it felt like it could push us back while walking.
+The main attraction was the lighthouse. To reach it, we had to go down around 850 stairs on one side. Looking at all those stairs from the top itself was crazy! But the views along the way made it worth it.
+I really liked the lighthouse and the whole area around it. Standing there with the ocean in front of us, strong winds blowing, and cliffs all around felt like something straight out of a movie.
+The drive and the views were beautiful, but what I will remember most is the weather. The cool breeze, the sound of the waves, and the powerful winds made the experience feel very different from the other places we visited.
+It was definitely one of those places where the journey and the atmosphere were just as memorable as the destination itself.
+</p>
+    </div>
+</div>
+
+<!-- half moon bay -->
+<div class="card" onclick="openBlog(this)">
+    <img src="static/half moon bay/moon bay cover.jpeg" alt="Half Moon Bay trip photo">
+    <div class="card-content">
+        <h3>Half Moon Bay</h3>
+        <p>Random Plan</p>
+    </div>
+
+    <div class="full-story" style="display:none;">
+        <div class="trip-gallery">
+            
+            <img src="static/half moon bay/Surfer_s_Beach_592b3270-526e-4568-aa01-c3c4b4a7029a.jpg" alt="Surfer's Beach">
+            <img src="static/half moon bay/WhatsApp Image 2026-06-22 at 7.12.54 PM (1).jpeg" alt="Half Moon Bay memory">
+            <img src="static/half moon bay/WhatsApp Image 2026-06-22 at 7.12.54 PM (2).jpeg" alt="Half Moon Bay memory">
+        </div>
+
+        <p>Our trip to Half Moon Bay was actually a random evening plan. We left around 5 PM and reached there at about 7:15 PM. The drive itself was really nice. The road was covered with tall trees on both sides, and for some time it reminded me of the Big Sur route. The only difference was that instead of the ocean, there were forests and giant trees all around.
+When we reached the beach, we put down our chairs and mat and just sat there for a while. The weather was nice, and it felt good to just relax and listen to the waves. I clicked a lot of photos there, especially because it was almost sunset time and the lighting was so good. Every picture was coming out amazing. You can definitely call me a photoholic!
+We were hoping to see the sunset, but since it was summer in California, the sun sets starts around 8:30 PM and we had to leave before that. Even though we missed the sunset, the beach looked beautiful and the view was worth the drive.
+After that, we had dinner at an Indian restaurant and then went to Palo Alto for ice cream. We visited Salt & Straw, and there was literally a line outside the store even at around 10 PM. They only had a couple of eggless options, but both were really good. The texture of the ice cream was what stood out to me the most ,very smooth and creamy. It was probably one of the best ice creams I had during the trip.
+It was a short trip and not something we had planned in advance, but I'm glad we went. The drive, the beach, and of course the ice cream made it a really nice evening.
+</p>
+    </div>
+</div>
+
+<!-- SAcremanto  -->
+<div class="card" onclick="openBlog(this)">
+    <img src="static/sac/IMG_7386.jpeg" alt="Sacramento trip photo">
+    <div class="card-content">
+        <h3>Sacramento</h3>
+        <p>A short stop, but a meaningful one.
+</p>
+    </div>
+
+    <div class="full-story" style="display:none;">
+        <div class="trip-gallery">
+            <img src="static/sac/csus.avif" alt="California State University Sacramento">
+            <img src="static/sac/IMG_7405.jpeg" alt="Sacramento trip memory">
+            <img src="static/sac/IMG_7406.jpeg" alt="Sacramento trip memory">
+            <img src="static/sac/IMG_7413.jpeg" alt="Sacramento trip memory">
+        </div>
+
+        <p>While travelling to Lake Tahoe, we made a stop in Sacramento, the capital of California. It was on our route, but the main reason we wanted to visit was because my sister completed her Master's degree from California State University, Sacramento.
+We visited her university, and she showed us around the campus. As we walked through different buildings, she told us about her classes, where she used to spend most of her time, and even the places where she lived during her studies. Listening to all her stories while actually seeing those places made the visit feel much more personal.
+The visit was also a little emotional for me. We couldn't attend her graduation, so being able to see the university where she spent such an important part of her life felt special in a different way. It almost felt like we were getting a small glimpse into her journey there.
+One thing that caught my attention was a small replica of the Golden Gate Bridge on the campus. It wasn't very big, but it looked beautiful and was something I wasn't expecting to see.
+Sacramento was only a short stop during our journey, but because of the connection with my sister's student life, it ended up being much more memorable than I had imagined.</p>
+    </div>
+</div>
+
+<!-- lake tahoe -->
+<div class="card" onclick="openBlog(this)">
+    <img src="static/lake tahoe/IMG_7429.jpeg" alt="Lake Tahoe trip photo">
+    <div class="card-content">
+        <h3>Lake Tahoe</h3>
+        <p>Lake Tahoe: 6,225 ft above Sea level</p>
+    </div>
+
+    <div class="full-story" style="display:none;">
+        <div class="trip-gallery">
+            <img src="static/lake tahoe/IMG_7508.jpeg" alt="Lake Tahoe view">
+            <img src="static/lake tahoe/IMG_7550.jpeg" alt="Lake Tahoe view">
+            
+        </div>
+
+        <p>Although I visited the main spots last year, this time I explored the natural scenery of Lake Tahoe🌊
+Lake Tahoe is one of the most beautiful places, at around 1,657 ft above sea level, surrounded by mountains! When we were visiting, the winds were very high, due to which our kayaking plan got canceled, which gave me some disappointment as it was my first time doing that. But the view was amazing, which completely cut off that disappointment!
+We visited many points like Cave Rock, Nevada Beach, Logan’s Viewpoint, Pope Beach, and many more. On that trip, we explored many other small viewpoints as well, and one point became my favorite. The view from that point was insane. I loved it!
+We had our lunch at Base Camp Pizza, which is famous, and it was really good. I liked their pizza and had a pinacolada  which tasted really good.
+Then we again started our journey to viewpoints and beaches. After that, we searched some gift shops to buy magnets, as I am very fond of them! And bought coffee.
+After that, we headed to Sacramento (from where my sister graduated with her postgraduate degree) to visit a Jain temple, and after that, we returned home!!!🫶🏻</p>
+    </div>
+</div>
+
+<!-- Universities -->
+<div class="card" onclick="openBlog(this)">
+    <img src="static/university/harvard.JPG" alt="Universities trip photo">
+    <div class="card-content">
+        <h3>Universities</h3>
+        <p>🎓 Universities Visited</p>
+    </div>
+
+    <div class="full-story" style="display:none;">
+        <div class="trip-gallery">
+            <img src="static/university/harvard sq.jpg" alt="Harvard Square">
+            <img src="static/university/mit.JPG" alt="MIT">
+            <img src="static/university/csus.avif" alt="California State University Sacramento">
+            <img src="static/sac/IMG_7406.jpeg" alt="Sacramento trip memory">
+            <img src="static/university/WhatsApp Image 2026-06-22 at 11.32.24 PM.jpeg" alt="University trip memory">
+            <img src="static/university/WhatsApp Image 2026-06-22 at 7.07.42 PM (1).jpeg" alt="University trip memory">
+            <img src="static/university/WhatsApp Image 2026-06-22 at 7.07.42 PM (2).jpeg" alt="University trip memory">
+            
+            <img src="static/university/WhatsApp Image 2026-06-22 at 7.07.42 PM (4).jpeg" alt="University trip memory">
+        </div>
+
+        <p>
+During my trip, I also had the opportunity to visit a few well-known universities across the United States. As a student myself, walking through these campuses was exciting because each university has its own history, culture, and atmosphere.
+        </p>
+        <ul class="university-list">
+            <li><strong>Northeastern University(NEU)</strong>, Boston</li>
+            <li><strong>Massachusetts Institute of Technology (MIT)</strong>, Cambridge</li>
+            <li><strong>Harvard University</strong>, Cambridge</li>
+            <li><strong>California State University, Sacramento (CSUS)</strong></li>
+            <li><strong>Stanford University</strong>, Stanford</li>
+        </ul>
+        <p>
+Each campus felt different in its own way. Some impressed me with their historic architecture, while others stood out because of their innovation, research culture, and student life. Visiting these universities gave me a glimpse into different academic environments and made me imagine what it would be like to study there.
+Among them, California State University, Sacramento was especially meaningful because my sister completed her Master's degree there. Walking around the campus while hearing her stories made the visit much more personal and memorable.
+        </p>
+    </div>
+</div>
+
+
+
+</section>
+
+<footer>
+Travel memories captured by Prisha Jain ❤️
+</footer>
+
+<!-- ================= MODAL ================= -->
+<div id="blogModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <img id="modalImage" style="width:100%; max-height:400px; object-fit:contain; object-position:center; background:#f1f1f1; border-radius:10px;">
+        <h2 id="modalTitle"></h2>
+        <div id="modalText"></div>
+    </div>
+</div>
+
+<div id="photoViewer" class="photo-viewer">
+    <button class="photo-close" onclick="closePhotoViewer()" aria-label="Close photo">&times;</button>
+    <button class="photo-nav photo-prev" onclick="showPreviousPhoto(event)" aria-label="Previous photo">&#8249;</button>
+    <img id="photoViewerImage" alt="Large travel photo">
+    <button class="photo-nav photo-next" onclick="showNextPhoto(event)" aria-label="Next photo">&#8250;</button>
+    <div id="photoCount" class="photo-count"></div>
+</div>
+
+<!-- ================= JS ================= -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+let currentPhotos = [];
+let currentPhotoIndex = 0;
+let touchStartX = 0;
+let touchEndX = 0;
+
+document.addEventListener("error", function(event) {
+    const img = event.target;
+
+    if (!img || img.tagName !== "IMG" || img.dataset.errorHandled === "true") return;
+
+    img.dataset.errorHandled = "true";
+    img.style.display = "none";
+
+    const message = document.createElement("div");
+    message.className = "image-error";
+    message.textContent = "Photo unavailable";
+    img.insertAdjacentElement("afterend", message);
+}, true);
+
+const mapPlaces = [
+    { name: "Lombard Street", city: "San Francisco", lat: 37.8021, lng: -122.4187, photo: "static/sf/WhatsApp Image 2026-06-22 at 10.49.10 PM (2).jpeg" },
+    { name: "Ghirardelli Square", city: "San Francisco", lat: 37.8059, lng: -122.4227, photo: "static/sf/ghiradheli.jpg" },
+    { name: "Union Square", city: "San Francisco", lat: 37.7880, lng: -122.4075, photo: "static/sf/union sq.jpeg" },
+    { name: "Pier 39", city: "San Francisco", lat: 37.8087, lng: -122.4098, photo: "static/sf/IMG_6770.JPG.jpeg" },
+    { name: "Golden Gate Bridge", city: "San Francisco", lat: 37.8199, lng: -122.4783, photo: "static/sf/golden gate pfp.jpeg" },
+    { name: "Palace of Fine Arts", city: "San Francisco", lat: 37.8029, lng: -122.4484, photo: "static/sf/palace of fine.jpg" },
+
+    { name: "Times Square", city: "New York", lat: 40.7580, lng: -73.9855, photo: "static/nyc/times sq1.jpeg" },
+    { name: "Central Park", city: "New York", lat: 40.7829, lng: -73.9654, photo: "static/nyc/central park.jpeg" },
+    { name: "Roosevelt Island Tramway", city: "New York", lat: 40.7616, lng: -73.9643, photo: "static/nyc/cable car.JPG" },
+    { name: "Statue of Liberty", city: "New York", lat: 40.6892, lng: -74.0445, photo: "static/nyc/nyc cover.JPG" },
+    { name: "Brooklyn Bridge", city: "New York", lat: 40.7061, lng: -73.9969, photo: "static/nyc/IMG_8225.JPG.jpeg" },
+    { name: "The Edge", city: "New York", lat: 40.7540, lng: -74.0008, photo: "static/nyc/empire state.jpg" },
+
+    { name: "Boston Duck Tour", city: "Boston", lat: 42.3472, lng: -71.0825, photo: "static/boston/duck in water.JPG" },
+    { name: "Northeastern University", city: "Boston", lat: 42.3398, lng: -71.0892, photo: "static/university/WhatsApp Image 2026-06-22 at 11.32.24 PM.jpeg" },
+    { name: "Harvard Square", city: "Cambridge", lat: 42.3734, lng: -71.1189, photo: "static/university/harvard sq.jpg" },
+    { name: "Harvard University", city: "Cambridge", lat: 42.3744, lng: -71.1169, photo: "static/university/harvard.JPG" },
+    { name: "MIT", city: "Cambridge", lat: 42.3601, lng: -71.0942, photo: "static/university/mit.JPG" },
+
+    { name: "Lincoln Memorial", city: "Washington DC", lat: 38.8893, lng: -77.0502, photo: "static/dc/dc lincon.JPG" },
+    { name: "White House", city: "Washington DC", lat: 38.8977, lng: -77.0365, photo: "static/dc/white house.JPG" },
+    { name: "World War II Memorial", city: "Washington DC", lat: 38.8894, lng: -77.0405, photo: "static/dc/world war2 memo.png" },
+
+    { name: "Paris Las Vegas", city: "Las Vegas", lat: 36.1125, lng: -115.1707, photo: "static/vegas/paris hotel.jpg" },
+    { name: "Las Vegas Strip", city: "Las Vegas", lat: 36.1147, lng: -115.1728, photo: "static/vegas/vegas cover.jpg" },
+    { name: "The Venetian", city: "Las Vegas", lat: 36.1212, lng: -115.1696, photo: "static/vegas/venice .jpeg" },
+    { name: "Bellagio Fountain", city: "Las Vegas", lat: 36.1126, lng: -115.1767, photo: "static/vegas/fountain las vegas.jpg" },
+    { name: "Sphere", city: "Las Vegas", lat: 36.1209, lng: -115.1619, photo: "static/vegas/postcard from earth.jpg" },
+
+    { name: "Carmel by the Sea", city: "California Coast", lat: 36.5552, lng: -121.9233, photo: "static/carmel by sea/Carmel-by-the-Sea-Credit_SeeMonterey.jpg" },
+    { name: "Bixby Creek Bridge", city: "Big Sur", lat: 36.3715, lng: -121.9018, photo: "static/bixsur/bixsur cover.JPG" },
+    { name: "Pfeiffer Big Sur State Park", city: "Big Sur", lat: 36.2525, lng: -121.7879, photo: "static/bixsur/bixsur 3.JPG" },
+    { name: "Point Reyes Lighthouse", city: "Point Reyes", lat: 37.9955, lng: -123.0233, photo: "static/point reyes/light house.png" },
+    { name: "Point Reyes Seashore", city: "Point Reyes", lat: 38.0834, lng: -122.8809, photo: "static/point reyes/point reyes sea.JPG" },
+    { name: "Half Moon Bay", city: "California Coast", lat: 37.4636, lng: -122.4286, photo: "static/half moon bay/moon bay cover.jpeg" },
+    { name: "Sacramento", city: "California", lat: 38.5816, lng: -121.4944, photo: "static/sac/IMG_7386.jpeg" },
+    { name: "Lake Tahoe", city: "California/Nevada", lat: 39.0968, lng: -120.0324, photo: "static/lake tahoe/IMG_7429.jpeg" },
+    { name: "Stanford University", city: "Stanford", lat: 37.4275, lng: -122.1697, photo: "static/university/WhatsApp Image 2026-06-22 at 7.07.42 PM (1).jpeg" }
+];
+
+function initTravelMap() {
+    const mapElement = document.getElementById("travelMap");
+
+    if (!mapElement) return;
+
+    if (typeof L === "undefined") {
+        mapElement.innerHTML = '<div class="map-fallback">Map could not load. Please check your internet connection and refresh.</div>';
+        return;
+    }
+
+    mapElement.innerHTML = "";
+
+    const map = L.map("travelMap", {
+        scrollWheelZoom: false
+    }).setView([38.7, -96], 4);
+
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 19,
+        attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    const pinIcon = L.divIcon({
+        className: "",
+        html: '<div class="travel-pin"></div>',
+        iconSize: [28, 28],
+        iconAnchor: [14, 28],
+        popupAnchor: [0, -26]
+    });
+
+    const markers = mapPlaces.map(place => {
+        const popup = `
+            <div class="map-popup">
+                <img src="${place.photo}" alt="${place.name}">
+                <h3>${place.name}</h3>
+                <p>${place.city}</p>
+                <span class="popup-note">A saved stop from the journal</span>
+            </div>
+        `;
+
+        return L.marker([place.lat, place.lng], { icon: pinIcon })
+            .addTo(map)
+            .bindPopup(popup);
+    });
+
+    const group = L.featureGroup(markers);
+    map.fitBounds(group.getBounds(), { padding: [34, 34] });
+}
+
+initTravelMap();
+
+function openBlog(card) {
+    const image = card.querySelector("img").src;
+    const title = card.querySelector("h3").innerText;
+    const story = card.querySelector(".full-story").innerHTML;
+
+    document.getElementById("modalImage").src = image;
+    document.getElementById("modalTitle").innerText = title;
+    document.getElementById("modalText").innerHTML = story;
+
+    document.getElementById("blogModal").style.display = "flex";
+    preparePhotoGallery();
+}
+
+function closeModal() {
+    document.getElementById("blogModal").style.display = "none";
+}
+
+function preparePhotoGallery() {
+    const modalImage = document.getElementById("modalImage");
+    const galleryImages = Array.from(document.querySelectorAll("#modalText .trip-gallery img"));
+    currentPhotos = [modalImage, ...galleryImages].map(img => ({
+        src: img.src,
+        alt: img.alt || "Travel photo"
+    }));
+
+    [modalImage, ...galleryImages].forEach((img, index) => {
+        img.style.cursor = "zoom-in";
+        img.onclick = function(event) {
+            event.stopPropagation();
+            openPhotoViewer(index);
+        };
+    });
+}
+
+function openPhotoViewer(index) {
+    currentPhotoIndex = index;
+    updatePhotoViewer();
+    document.getElementById("photoViewer").style.display = "flex";
+}
+
+function closePhotoViewer() {
+    document.getElementById("photoViewer").style.display = "none";
+}
+
+function updatePhotoViewer() {
+    const photo = currentPhotos[currentPhotoIndex];
+    document.getElementById("photoViewerImage").src = photo.src;
+    document.getElementById("photoViewerImage").alt = photo.alt;
+    document.getElementById("photoCount").innerText = `${currentPhotoIndex + 1} / ${currentPhotos.length}`;
+}
+
+function showPreviousPhoto(event) {
+    if (event) event.stopPropagation();
+    currentPhotoIndex = (currentPhotoIndex - 1 + currentPhotos.length) % currentPhotos.length;
+    updatePhotoViewer();
+}
+
+function showNextPhoto(event) {
+    if (event) event.stopPropagation();
+    currentPhotoIndex = (currentPhotoIndex + 1) % currentPhotos.length;
+    updatePhotoViewer();
+}
+
+window.onclick = function(e){
+    if(e.target == document.getElementById("blogModal")){
+        closeModal();
+    }
+    if(e.target == document.getElementById("photoViewer")){
+        closePhotoViewer();
+    }
+}
+
+document.addEventListener("keydown", function(e){
+    if (document.getElementById("photoViewer").style.display !== "flex") return;
+
+    if (e.key === "ArrowLeft") {
+        showPreviousPhoto(e);
+    }
+    if (e.key === "ArrowRight") {
+        showNextPhoto(e);
+    }
+    if (e.key === "Escape") {
+        closePhotoViewer();
+    }
+});
+
+document.getElementById("photoViewer").addEventListener("touchstart", function(e){
+    touchStartX = e.changedTouches[0].screenX;
+});
+
+document.getElementById("photoViewer").addEventListener("touchend", function(e){
+    touchEndX = e.changedTouches[0].screenX;
+    const swipeDistance = touchEndX - touchStartX;
+
+    if (Math.abs(swipeDistance) < 50) return;
+
+    if (swipeDistance > 0) {
+        showPreviousPhoto(e);
+    } else {
+        showNextPhoto(e);
+    }
+});
+
+document.getElementById("photoViewerImage").onclick = function(e) {
+    e.stopPropagation();
+}
+</script>
+
+</body>
+</html>

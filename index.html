@@ -492,6 +492,33 @@ body::before {
     line-height: 1.8;
 }
 
+.modal-admin-actions {
+    display: none;
+    justify-content: flex-end;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin: 14px 0 6px;
+}
+
+.modal-admin-actions button {
+    border: 0;
+    border-radius: 999px;
+    padding: 10px 15px;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.modal-edit-button {
+    background: rgba(255, 230, 239, 0.96);
+    color: var(--rose);
+}
+
+.modal-delete-button,
+.admin-danger {
+    background: #fff0f0;
+    color: #b4233c;
+}
+
 .university-list {
     margin: 10px 0 14px;
     padding-left: 28px;
@@ -516,6 +543,288 @@ body::before {
     cursor: pointer;
     line-height: 1;
     box-shadow: 0 8px 22px rgba(61, 45, 71, 0.16);
+}
+
+.publish-button {
+    position: fixed;
+    right: 24px;
+    top: 24px;
+    z-index: 900;
+    border: 0;
+    border-radius: 999px;
+    padding: 12px 18px;
+    background: linear-gradient(135deg, #fffdf9, #ffe6ef);
+    color: var(--rose);
+    font-weight: 800;
+    font-size: 14px;
+    cursor: pointer;
+    box-shadow: 0 14px 32px rgba(61, 45, 71, 0.18);
+    border: 1px solid rgba(255,255,255,0.92);
+    transition: transform 0.22s ease, box-shadow 0.22s ease;
+}
+
+.publish-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 18px 38px rgba(61, 45, 71, 0.22);
+}
+
+.account-dropdown {
+    display: none;
+    position: fixed;
+    right: 24px;
+    top: 74px;
+    z-index: 950;
+    width: min(260px, calc(100vw - 28px));
+    padding: 10px;
+    border-radius: 8px;
+    background: rgba(255, 253, 249, 0.98);
+    border: 1px solid rgba(216, 93, 135, 0.16);
+    box-shadow: 0 20px 48px rgba(61, 45, 71, 0.22);
+}
+
+.account-dropdown.is-open {
+    display: grid;
+    gap: 8px;
+}
+
+.account-dropdown button {
+    width: 100%;
+    border: 0;
+    border-radius: 8px;
+    padding: 12px 13px;
+    background: linear-gradient(135deg, #fff8fb, #f1fbff);
+    color: var(--ink);
+    font-weight: 800;
+    text-align: left;
+    cursor: pointer;
+}
+
+.account-dropdown button:hover {
+    box-shadow: 0 10px 22px rgba(61, 45, 71, 0.12);
+}
+
+.account-submenu {
+    display: none;
+    gap: 7px;
+    padding: 6px 0 0 10px;
+    border-left: 2px solid rgba(216, 93, 135, 0.18);
+}
+
+.account-submenu.is-open {
+    display: grid;
+}
+
+.admin-modal .modal-content {
+    max-width: 760px;
+}
+
+.admin-menu {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    margin-top: 18px;
+}
+
+.admin-greeting {
+    margin-top: 4px;
+    color: var(--muted);
+    font-weight: 700;
+}
+
+.admin-menu button,
+.journal-list button {
+    border: 0;
+    border-radius: 8px;
+    padding: 14px 16px;
+    background: linear-gradient(135deg, #fff8fb, #f1fbff);
+    color: var(--ink);
+    font-weight: 800;
+    text-align: left;
+    cursor: pointer;
+    border: 1px solid rgba(216, 93, 135, 0.16);
+}
+
+.admin-menu button:hover,
+.journal-list button:hover {
+    border-color: rgba(216, 93, 135, 0.45);
+    box-shadow: 0 12px 26px rgba(61, 45, 71, 0.12);
+}
+
+.journal-list {
+    display: grid;
+    gap: 10px;
+    margin-top: 14px;
+}
+
+.journal-list-empty {
+    padding: 14px;
+    border-radius: 8px;
+    border: 1px dashed rgba(216, 93, 135, 0.3);
+    color: var(--muted);
+    background: linear-gradient(135deg, #fff8fb, #f7fbff);
+}
+
+.admin-form {
+    display: grid;
+    gap: 14px;
+    margin-top: 12px;
+}
+
+.admin-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.admin-field {
+    display: grid;
+    gap: 7px;
+}
+
+.admin-field label,
+.image-picker-title {
+    color: var(--ink);
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.admin-field input,
+.admin-field textarea {
+    width: 100%;
+    border: 1px solid rgba(216, 93, 135, 0.22);
+    border-radius: 8px;
+    background: #fff;
+    color: var(--ink);
+    padding: 11px 12px;
+    font-size: 15px;
+    outline: none;
+}
+
+.admin-field textarea {
+    min-height: 180px;
+    resize: vertical;
+    line-height: 1.6;
+}
+
+.admin-field input:focus,
+.admin-field textarea:focus {
+    border-color: rgba(216, 93, 135, 0.72);
+    box-shadow: 0 0 0 4px rgba(255, 230, 239, 0.8);
+}
+
+.admin-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+}
+
+.admin-actions button,
+.admin-secondary {
+    border: 0;
+    border-radius: 999px;
+    padding: 11px 17px;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.admin-submit {
+    background: linear-gradient(135deg, var(--rose), #ff9f6e);
+    color: white;
+    box-shadow: 0 12px 24px rgba(216, 93, 135, 0.24);
+}
+
+.admin-secondary {
+    background: rgba(255, 230, 239, 0.85);
+    color: var(--rose);
+}
+
+.admin-message {
+    min-height: 18px;
+    color: #9f3f66;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.image-choice-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 10px;
+    margin-top: 8px;
+}
+
+.image-choice {
+    display: grid;
+    gap: 7px;
+    padding: 8px;
+    border-radius: 8px;
+    border: 1px solid rgba(216, 93, 135, 0.16);
+    background: linear-gradient(135deg, #fff8fb, #f1fbff);
+}
+
+.image-choice img {
+    width: 100%;
+    height: 92px;
+    object-fit: contain;
+    border-radius: 6px;
+    background: white;
+}
+
+.image-choice span {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--muted);
+}
+
+.image-choice-empty,
+.pin-suggestions {
+    margin-top: 8px;
+    padding: 14px;
+    border-radius: 8px;
+    border: 1px dashed rgba(216, 93, 135, 0.3);
+    background: linear-gradient(135deg, #fff8fb, #f7fbff);
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.pin-suggestion {
+    display: grid;
+    gap: 10px;
+    padding: 12px;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.78);
+    border: 1px solid rgba(216, 93, 135, 0.14);
+}
+
+.pin-suggestion + .pin-suggestion {
+    margin-top: 10px;
+}
+
+.pin-suggestion label {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    color: var(--ink);
+    font-weight: 800;
+}
+
+.pin-suggestion small {
+    color: var(--muted);
+    font-weight: 600;
+}
+
+.pin-suggestion select {
+    width: 100%;
+    border: 1px solid rgba(216, 93, 135, 0.22);
+    border-radius: 8px;
+    background: white;
+    color: var(--ink);
+    padding: 10px 12px;
+    font-size: 14px;
 }
 
 /* FOOTER */
@@ -690,6 +999,16 @@ footer {
         padding: 18px;
     }
 
+    .publish-button {
+        right: 14px;
+        top: 14px;
+        padding: 10px 14px;
+    }
+
+    .admin-grid {
+        grid-template-columns: 1fr;
+    }
+
     #travelMap {
         height: 430px;
         border-width: 7px;
@@ -716,6 +1035,18 @@ footer {
 </head>
 
 <body>
+
+<button id="loginButton" class="publish-button" onclick="openLoginModal()">Login</button>
+<div id="accountDropdown" class="account-dropdown">
+    <button type="button" onclick="startNewPublish()">Publish New Article</button>
+    <button type="button" onclick="toggleManageDropdown()">Manage Article</button>
+    <div id="manageDropdown" class="account-submenu">
+        <button type="button" onclick="openManageListFromDropdown('edit')">Update</button>
+        <button type="button" onclick="openManageListFromDropdown('delete')">Delete</button>
+        <button type="button" onclick="openManageListFromDropdown('archive')">Archive</button>
+    </div>
+    <button type="button" onclick="logoutAdmin()">Logout</button>
+</div>
 
 <section class="hero">
     <h2>Prisha's Travel Journal</h2>
@@ -1329,6 +1660,121 @@ Travel memories captured by Prisha Jain ❤️
         <img id="modalImage" style="width:100%; max-height:400px; object-fit:contain; object-position:center; background:#f1f1f1; border-radius:10px;">
         <h2 id="modalTitle"></h2>
         <div id="modalText"></div>
+        <div id="modalAdminActions" class="modal-admin-actions">
+            <button type="button" class="modal-edit-button" onclick="requestEditCurrentJournal()">Edit</button>
+            <button type="button" class="modal-delete-button" onclick="requestDeleteCurrentJournal()">Delete</button>
+        </div>
+    </div>
+</div>
+
+<div id="loginModal" class="modal admin-modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeLoginModal()">&times;</span>
+        <h2>Journal Login</h2>
+        <form class="admin-form" onsubmit="handleLogin(event)">
+            <div class="admin-field">
+                <label for="adminUsername">Username</label>
+                <input id="adminUsername" type="text" autocomplete="username" required>
+            </div>
+            <div class="admin-field">
+                <label for="adminPassword">Password</label>
+                <input id="adminPassword" type="password" autocomplete="current-password" required>
+            </div>
+            <div id="loginMessage" class="admin-message"></div>
+            <div class="admin-actions">
+                <button type="button" class="admin-secondary" onclick="closeLoginModal()">Cancel</button>
+                <button type="submit" class="admin-submit">Login</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="adminMenuModal" class="modal admin-modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeAdminMenuModal()">&times;</span>
+        <h2>Journal Options</h2>
+        <div id="adminGreeting" class="admin-greeting">Hi, Prisha</div>
+        <div class="admin-menu">
+            <button type="button" onclick="startNewPublish()">New Publish</button>
+            <button type="button" onclick="openManageArticlesModal()">Manage Articles</button>
+            <button type="button" onclick="logoutAdmin()">Logout</button>
+        </div>
+    </div>
+</div>
+
+<div id="manageArticlesModal" class="modal admin-modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeManageArticlesModal()">&times;</span>
+        <h2>Manage Articles</h2>
+        <div class="admin-menu">
+            <button type="button" onclick="showJournalList('edit')">Update</button>
+            <button type="button" onclick="showJournalList('delete')">Delete</button>
+            <button type="button" onclick="showJournalList('archive')">Archive</button>
+        </div>
+        <div class="admin-actions">
+            <button type="button" class="admin-secondary" onclick="backToAdminMenu()">Back</button>
+        </div>
+    </div>
+</div>
+
+<div id="journalListModal" class="modal admin-modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeJournalListModal()">&times;</span>
+        <h2 id="journalListTitle">Choose Journal</h2>
+        <div id="journalList" class="journal-list"></div>
+        <div class="admin-actions">
+            <button type="button" class="admin-secondary" onclick="cancelJournalList()">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<div id="publishModal" class="modal admin-modal">
+    <div class="modal-content">
+        <span class="close" onclick="closePublishModal()">&times;</span>
+        <h2 id="publishModalTitle">Publish Journal</h2>
+        <form id="publishForm" class="admin-form" onsubmit="publishJournal(event)">
+            <div class="admin-grid">
+                <div class="admin-field">
+                    <label for="entryTitle">Modal name</label>
+                    <input id="entryTitle" type="text" placeholder="Example: Los Angeles" required>
+                </div>
+                <div class="admin-field">
+                    <label for="entrySubtitle">Card subtitle</label>
+                    <input id="entrySubtitle" type="text" placeholder="A short line for the card" required>
+                </div>
+            </div>
+            <div class="admin-field">
+                <label for="entryContent">Journal content</label>
+                <textarea id="entryContent" placeholder="Write your travel story here..." required></textarea>
+            </div>
+            <div class="admin-field">
+                <label for="tripLocation">Trip location</label>
+                <input id="tripLocation" type="text" placeholder="Example: New York" required>
+            </div>
+            <div class="admin-actions">
+                <button type="button" class="admin-secondary" onclick="analyzeMapPins()">Analyze Map Pins</button>
+            </div>
+            <div class="admin-field">
+                <label for="entryImages">Upload journal images</label>
+                <input id="entryImages" type="file" accept="image/*" multiple>
+                <button type="button" class="admin-secondary" onclick="clearPublishImages()">Clear selected images</button>
+            </div>
+            <div>
+                <div class="image-picker-title">Modal main picture</div>
+                <div id="mainImageChoices" class="image-choice-grid">
+                    <div class="image-choice-empty">Choose images above, then select which one should be the card and modal cover.</div>
+                </div>
+            </div>
+            <div>
+                <div class="image-picker-title">Map pins and pin pictures</div>
+                <div id="pinSuggestions" class="pin-suggestions">Write your journal content, upload images, then click Analyze Map Pins. You can select more than one pin and choose a picture for every pin.</div>
+            </div>
+            <div id="publishMessage" class="admin-message"></div>
+            <div class="admin-actions">
+                <button type="button" class="admin-secondary" onclick="cancelPublishModal()">Cancel</button>
+                <button id="publishSubmitButton" type="submit" class="admin-submit">Publish Journal</button>
+            </div>
+        </form>
     </div>
 </div>
 
@@ -1347,6 +1793,83 @@ let currentPhotos = [];
 let currentPhotoIndex = 0;
 let touchStartX = 0;
 let touchEndX = 0;
+let selectedPublishImages = [];
+let selectedPublishImageNames = [];
+let suggestedMapPins = [];
+let travelMapInstance = null;
+let pendingAdminAction = "publish";
+let currentModalEntryId = null;
+let editingEntryId = null;
+let editingEntryType = "published";
+let currentListMode = "edit";
+let publishReturnView = "admin";
+
+const ADMIN_USERNAME = "prisha";
+const ADMIN_PASSWORD = "Prisha@2026";
+const PUBLISHED_STORAGE_KEY = "prishaPublishedJournals";
+const JOURNAL_OVERRIDES_STORAGE_KEY = "prishaJournalOverrides";
+const JOURNAL_ARCHIVE_STORAGE_KEY = "prishaJournalArchive";
+const JOURNAL_HIDDEN_STORAGE_KEY = "prishaHiddenJournals";
+const ADMIN_SESSION_STORAGE_KEY = "prishaAdminLoggedIn";
+const ADMIN_NAME_STORAGE_KEY = "prishaAdminName";
+
+const knownMapPins = [
+    { name: "Times Square", city: "New York", lat: 40.7580, lng: -73.9855, keywords: ["times square", "time square", "broadway"] },
+    { name: "Central Park", city: "New York", lat: 40.7829, lng: -73.9654, keywords: ["central park"] },
+    { name: "Roosevelt Island Tramway", city: "New York", lat: 40.7616, lng: -73.9643, keywords: ["roosevelt", "tram", "tramway", "cable car"] },
+    { name: "Statue of Liberty", city: "New York", lat: 40.6892, lng: -74.0445, keywords: ["statue of liberty", "liberty island"] },
+    { name: "Brooklyn Bridge", city: "New York", lat: 40.7061, lng: -73.9969, keywords: ["brooklyn bridge"] },
+    { name: "The Edge", city: "New York", lat: 40.7540, lng: -74.0008, keywords: ["the edge", "edge nyc", "hudson yards"] },
+    { name: "Empire State Building", city: "New York", lat: 40.7484, lng: -73.9857, keywords: ["empire state"] },
+    { name: "Hollywood Walk of Fame", city: "Los Angeles", lat: 34.1016, lng: -118.3269, keywords: ["walk of fame", "hollywood star", "hollywood stars"] },
+    { name: "Beverly Hills", city: "Los Angeles", lat: 34.0736, lng: -118.4004, keywords: ["beverly hills", "rodeo drive"] },
+    { name: "Griffith Observatory", city: "Los Angeles", lat: 34.1184, lng: -118.3004, keywords: ["griffith", "observatory", "planetarium"] },
+    { name: "Hollywood Sign", city: "Los Angeles", lat: 34.1341, lng: -118.3215, keywords: ["hollywood sign"] },
+    { name: "Santa Monica Pier", city: "Los Angeles", lat: 34.0099, lng: -118.4960, keywords: ["santa monica", "pier", "ferris wheel"] },
+    { name: "Urban Light at LACMA", city: "Los Angeles", lat: 34.0638, lng: -118.3580, keywords: ["lacma", "urban light", "street lamps"] },
+    { name: "Disneyland Park", city: "Anaheim", lat: 33.8121, lng: -117.9190, keywords: ["disneyland", "disney land", "disney park"] },
+    { name: "Disneyland Castle", city: "Anaheim", lat: 33.8128, lng: -117.9189, keywords: ["castle", "disney castle", "sleeping beauty"] },
+    { name: "Star Wars: Galaxy's Edge", city: "Disneyland", lat: 33.8143, lng: -117.9209, keywords: ["star wars", "galaxy edge", "rise of the resistance", "millennium falcon"] },
+    { name: "Universal Studios Hollywood", city: "Universal City", lat: 34.1381, lng: -118.3534, keywords: ["universal studios", "universal hollywood", "studio tour"] },
+    { name: "The Wizarding World of Harry Potter", city: "Universal Studios", lat: 34.1351, lng: -118.3553, keywords: ["harry potter", "hogwarts", "hogsmeade", "butterbeer"] },
+    { name: "SUPER NINTENDO WORLD", city: "Universal Studios", lat: 34.1360, lng: -118.3542, keywords: ["nintendo", "mario", "bowser"] },
+    { name: "Golden Gate Bridge", city: "San Francisco", lat: 37.8199, lng: -122.4783, keywords: ["golden gate"] },
+    { name: "Lombard Street", city: "San Francisco", lat: 37.8021, lng: -122.4187, keywords: ["lombard"] },
+    { name: "Ghirardelli Square", city: "San Francisco", lat: 37.8059, lng: -122.4227, keywords: ["ghirardelli"] },
+    { name: "Union Square", city: "San Francisco", lat: 37.7880, lng: -122.4075, keywords: ["union square"] },
+    { name: "Pier 39", city: "San Francisco", lat: 37.8087, lng: -122.4098, keywords: ["pier 39", "pier39"] },
+    { name: "Palace of Fine Arts", city: "San Francisco", lat: 37.8029, lng: -122.4484, keywords: ["palace of fine arts"] },
+    { name: "Paris Las Vegas", city: "Las Vegas", lat: 36.1125, lng: -115.1707, keywords: ["paris las vegas", "eiffel tower"] },
+    { name: "Las Vegas Strip", city: "Las Vegas", lat: 36.1147, lng: -115.1728, keywords: ["strip", "las vegas strip"] },
+    { name: "The Venetian", city: "Las Vegas", lat: 36.1212, lng: -115.1696, keywords: ["venetian", "venice"] },
+    { name: "Bellagio Fountain", city: "Las Vegas", lat: 36.1126, lng: -115.1767, keywords: ["bellagio", "fountain"] },
+    { name: "Sphere", city: "Las Vegas", lat: 36.1209, lng: -115.1619, keywords: ["sphere"] },
+    { name: "Boston Duck Tour", city: "Boston", lat: 42.3472, lng: -71.0825, keywords: ["duck tour", "boston duck"] },
+    { name: "Harvard University", city: "Cambridge", lat: 42.3744, lng: -71.1169, keywords: ["harvard"] },
+    { name: "MIT", city: "Cambridge", lat: 42.3601, lng: -71.0942, keywords: ["mit", "massachusetts institute"] },
+    { name: "White House", city: "Washington DC", lat: 38.8977, lng: -77.0365, keywords: ["white house"] },
+    { name: "Lincoln Memorial", city: "Washington DC", lat: 38.8893, lng: -77.0502, keywords: ["lincoln memorial"] },
+    { name: "World War II Memorial", city: "Washington DC", lat: 38.8894, lng: -77.0405, keywords: ["world war ii", "wwii"] },
+    { name: "Lake Tahoe", city: "California/Nevada", lat: 39.0968, lng: -120.0324, keywords: ["lake tahoe", "tahoe"] },
+    { name: "Sacramento", city: "California", lat: 38.5816, lng: -121.4944, keywords: ["sacramento"] },
+    { name: "Stanford University", city: "Stanford", lat: 37.4275, lng: -122.1697, keywords: ["stanford"] },
+    { name: "Half Moon Bay", city: "California Coast", lat: 37.4636, lng: -122.4286, keywords: ["half moon bay"] },
+    { name: "Point Reyes Lighthouse", city: "Point Reyes", lat: 37.9955, lng: -123.0233, keywords: ["point reyes", "lighthouse"] },
+    { name: "Carmel by the Sea", city: "California Coast", lat: 36.5552, lng: -121.9233, keywords: ["carmel"] },
+    { name: "Bixby Creek Bridge", city: "Big Sur", lat: 36.3715, lng: -121.9018, keywords: ["bixby", "bixby bridge"] },
+    { name: "Pfeiffer Big Sur State Park", city: "Big Sur", lat: 36.2525, lng: -121.7879, keywords: ["pfeiffer", "big sur"] }
+];
+
+const locationFallbackPins = [
+    { name: "New York", city: "New York", lat: 40.7128, lng: -74.0060, keywords: ["new york", "nyc"] },
+    { name: "Los Angeles", city: "Los Angeles", lat: 34.0522, lng: -118.2437, keywords: ["los angeles", "la"] },
+    { name: "San Francisco", city: "San Francisco", lat: 37.7749, lng: -122.4194, keywords: ["san francisco", "sf"] },
+    { name: "Las Vegas", city: "Las Vegas", lat: 36.1716, lng: -115.1391, keywords: ["las vegas", "vegas"] },
+    { name: "Boston", city: "Boston", lat: 42.3601, lng: -71.0589, keywords: ["boston"] },
+    { name: "Washington DC", city: "Washington DC", lat: 38.9072, lng: -77.0369, keywords: ["washington dc", "dc"] },
+    { name: "Anaheim", city: "Anaheim", lat: 33.8366, lng: -117.9143, keywords: ["anaheim"] },
+    { name: "Universal City", city: "Universal City", lat: 34.1389, lng: -118.3534, keywords: ["universal city"] }
+];
 
 document.addEventListener("error", function(event) {
     const img = event.target;
@@ -1361,6 +1884,910 @@ document.addEventListener("error", function(event) {
     message.textContent = "Photo unavailable";
     img.insertAdjacentElement("afterend", message);
 }, true);
+
+function escapeHTML(value) {
+    return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+function getPublishedJournals() {
+    try {
+        return JSON.parse(localStorage.getItem(PUBLISHED_STORAGE_KEY)) || [];
+    } catch (error) {
+        return [];
+    }
+}
+
+function savePublishedJournals(entries) {
+    localStorage.setItem(PUBLISHED_STORAGE_KEY, JSON.stringify(entries));
+}
+
+function getStoredList(key) {
+    try {
+        return JSON.parse(localStorage.getItem(key)) || [];
+    } catch (error) {
+        return [];
+    }
+}
+
+function saveStoredList(key, entries) {
+    localStorage.setItem(key, JSON.stringify(entries));
+}
+
+function getJournalOverrides() {
+    try {
+        return JSON.parse(localStorage.getItem(JOURNAL_OVERRIDES_STORAGE_KEY)) || {};
+    } catch (error) {
+        return {};
+    }
+}
+
+function saveJournalOverrides(overrides) {
+    localStorage.setItem(JOURNAL_OVERRIDES_STORAGE_KEY, JSON.stringify(overrides));
+}
+
+function getArchivedJournals() {
+    return getStoredList(JOURNAL_ARCHIVE_STORAGE_KEY);
+}
+
+function saveArchivedJournals(entries) {
+    saveStoredList(JOURNAL_ARCHIVE_STORAGE_KEY, entries);
+}
+
+function getHiddenJournalIds() {
+    return getStoredList(JOURNAL_HIDDEN_STORAGE_KEY);
+}
+
+function saveHiddenJournalIds(ids) {
+    saveStoredList(JOURNAL_HIDDEN_STORAGE_KEY, ids);
+}
+
+function slugify(value) {
+    return normalizeText(value).replace(/\s+/g, "-") || `journal-${Date.now()}`;
+}
+
+function contentToHTML(content) {
+    return escapeHTML(content)
+        .split(/\n\s*\n/)
+        .map(paragraph => `<p>${paragraph.trim().replace(/\n/g, "<br>")}</p>`)
+        .join("");
+}
+
+function createJournalCardHTML(entry) {
+    const images = Array.isArray(entry.images) && entry.images.length ? entry.images : [""];
+    const mainImageIndex = Number.isInteger(entry.mainImageIndex) ? entry.mainImageIndex : 0;
+    const galleryImages = images
+        .map((image, index) => `<img src="${image}" alt="${escapeHTML(entry.title)} photo ${index + 1}">`)
+        .join("");
+
+    return `
+        <img src="${images[mainImageIndex] || images[0]}" alt="${escapeHTML(entry.title)} trip photo">
+        <div class="card-content">
+            <h3>${escapeHTML(entry.title)}</h3>
+            <p>${escapeHTML(entry.subtitle)}</p>
+        </div>
+        <div class="full-story" style="display:none;">
+            <div class="trip-gallery">
+                ${galleryImages}
+            </div>
+            ${contentToHTML(entry.content)}
+        </div>
+    `;
+}
+
+function createPublishedCard(entry) {
+    const card = document.createElement("div");
+    card.className = "card published-card";
+    card.dataset.entryId = entry.id;
+    card.dataset.entryType = "published";
+    card.onclick = function() {
+        openBlog(card);
+    };
+
+    card.innerHTML = createJournalCardHTML(entry);
+
+    return card;
+}
+
+function getEntryFromCard(card) {
+    const title = card.querySelector("h3")?.innerText.trim() || "Untitled Journal";
+    const subtitle = card.querySelector(".card-content p")?.innerText.trim() || "";
+    const story = card.querySelector(".full-story");
+    const storyClone = story ? story.cloneNode(true) : document.createElement("div");
+    storyClone.querySelector(".trip-gallery")?.remove();
+    const galleryImages = Array.from(card.querySelectorAll(".full-story .trip-gallery img")).map(img => img.getAttribute("src") || img.src);
+    const coverImage = card.querySelector(":scope > img")?.getAttribute("src") || card.querySelector("img")?.src || "";
+    const images = galleryImages.length ? galleryImages : [coverImage];
+    const mainImageIndex = Math.max(0, images.findIndex(image => image === coverImage));
+
+    return {
+        id: card.dataset.entryId,
+        type: card.dataset.entryType || "static",
+        title,
+        subtitle,
+        content: storyClone.innerText.trim(),
+        tripLocation: title,
+        mainImageIndex,
+        pins: [],
+        images
+    };
+}
+
+function renderPublishedJournals() {
+    document.querySelectorAll(".published-card").forEach(card => card.remove());
+
+    const container = document.querySelector(".container");
+    if (!container) return;
+
+    getPublishedJournals().forEach(entry => {
+        container.appendChild(createPublishedCard(entry));
+    });
+}
+
+function prepareManagedCards() {
+    const overrides = getJournalOverrides();
+    const hiddenIds = new Set(getHiddenJournalIds());
+
+    document.querySelectorAll(".container .card:not(.published-card)").forEach(card => {
+        const title = card.querySelector("h3")?.innerText.trim() || "Untitled Journal";
+        const entryId = card.dataset.entryId || `static-${slugify(title)}`;
+        card.dataset.entryId = entryId;
+        card.dataset.entryType = "static";
+        card.classList.add("managed-card");
+
+        if (!card.dataset.originalHtml) {
+            card.dataset.originalHtml = card.innerHTML;
+        }
+
+        if (overrides[entryId]) {
+            card.innerHTML = createJournalCardHTML(overrides[entryId]);
+        }
+
+        card.style.display = hiddenIds.has(entryId) ? "none" : "";
+    });
+}
+
+function refreshJournalsAndMap() {
+    prepareManagedCards();
+    renderPublishedJournals();
+    initTravelMap();
+}
+
+function getVisibleJournalEntries() {
+    return Array.from(document.querySelectorAll(".container .card"))
+        .filter(card => card.style.display !== "none")
+        .map(card => getEntryFromCard(card));
+}
+
+function getPublishedMapPlaces() {
+    return getPublishedJournals().flatMap(entry => {
+        if (Array.isArray(entry.pins)) {
+            return entry.pins.map(pin => ({
+                name: pin.name,
+                city: pin.city,
+                lat: pin.lat,
+                lng: pin.lng,
+                photo: entry.images[pin.imageIndex] || entry.images[entry.mainImageIndex] || entry.images[0]
+            }));
+        }
+
+        return [{
+            name: entry.mapPlaceName || entry.title,
+            city: entry.mapCityName || entry.title,
+            lat: entry.lat,
+            lng: entry.lng,
+            photo: entry.images[entry.mapImageIndex] || entry.images[entry.mainImageIndex] || entry.images[0]
+        }];
+    }).filter(place => Number.isFinite(place.lat) && Number.isFinite(place.lng));
+}
+
+function getOverrideMapPlaces() {
+    const hiddenIds = new Set(getHiddenJournalIds());
+
+    return Object.values(getJournalOverrides()).flatMap(entry => {
+        if (hiddenIds.has(String(entry.id))) return [];
+        if (!Array.isArray(entry.pins)) return [];
+
+        return entry.pins.map(pin => ({
+            name: pin.name,
+            city: pin.city,
+            lat: pin.lat,
+            lng: pin.lng,
+            photo: entry.images[pin.imageIndex] || entry.images[entry.mainImageIndex] || entry.images[0]
+        }));
+    }).filter(place => Number.isFinite(place.lat) && Number.isFinite(place.lng));
+}
+
+function getHiddenStaticTitles() {
+    const hiddenIds = new Set(getHiddenJournalIds());
+
+    return Array.from(document.querySelectorAll('.container .card[data-entry-type="static"]'))
+        .filter(card => hiddenIds.has(card.dataset.entryId))
+        .map(card => normalizeText(card.querySelector("h3")?.innerText || ""));
+}
+
+function isPlaceHiddenByDeletedJournal(place, hiddenTitles) {
+    const placeName = normalizeText(place.name);
+    const placeCity = normalizeText(place.city);
+
+    return hiddenTitles.some(title => {
+        if (!title) return false;
+        return title.includes(placeCity) || placeCity.includes(title) || title.includes(placeName) || placeName.includes(title);
+    });
+}
+
+function getAllMapPlaces() {
+    const hiddenTitles = getHiddenStaticTitles();
+    const activeMapPlaces = mapPlaces.filter(place => !isPlaceHiddenByDeletedJournal(place, hiddenTitles));
+    return [...activeMapPlaces, ...getOverrideMapPlaces(), ...getPublishedMapPlaces()];
+}
+
+function isAdminLoggedIn() {
+    return localStorage.getItem(ADMIN_SESSION_STORAGE_KEY) === "true";
+}
+
+function getAdminName() {
+    return localStorage.getItem(ADMIN_NAME_STORAGE_KEY) || "Prisha";
+}
+
+function updateLoginButton() {
+    const button = document.getElementById("loginButton");
+    const greeting = document.getElementById("adminGreeting");
+
+    if (!button) return;
+
+    if (isAdminLoggedIn()) {
+        button.innerText = `Hi, ${getAdminName()}`;
+        if (greeting) greeting.innerText = `Welcome, ${getAdminName()}`;
+    } else {
+        button.innerText = "Login";
+        if (greeting) greeting.innerText = "Hi, Prisha";
+    }
+}
+
+function openAccountDropdown() {
+    updateLoginButton();
+    document.getElementById("accountDropdown").classList.add("is-open");
+}
+
+function closeAccountDropdown() {
+    document.getElementById("accountDropdown").classList.remove("is-open");
+    closeManageDropdown();
+}
+
+function toggleAccountDropdown() {
+    const dropdown = document.getElementById("accountDropdown");
+
+    if (dropdown.classList.contains("is-open")) {
+        closeAccountDropdown();
+        return;
+    }
+
+    openAccountDropdown();
+}
+
+function toggleManageDropdown() {
+    document.getElementById("manageDropdown").classList.toggle("is-open");
+}
+
+function openManageDropdown() {
+    openAccountDropdown();
+    document.getElementById("manageDropdown").classList.add("is-open");
+}
+
+function closeManageDropdown() {
+    document.getElementById("manageDropdown").classList.remove("is-open");
+}
+
+function openManageListFromDropdown(mode) {
+    closeAccountDropdown();
+    showJournalList(mode);
+}
+
+function openLoginModal(action = "publish") {
+    pendingAdminAction = action;
+
+    if (isAdminLoggedIn()) {
+        toggleAccountDropdown();
+        return;
+    }
+
+    document.getElementById("loginModal").style.display = "flex";
+    document.getElementById("loginMessage").innerText = "";
+    document.getElementById("adminUsername").focus();
+}
+
+function closeLoginModal() {
+    document.getElementById("loginModal").style.display = "none";
+    document.getElementById("adminPassword").value = "";
+}
+
+function openAdminMenuModal() {
+    updateLoginButton();
+    openAccountDropdown();
+}
+
+function closeAdminMenuModal() {
+    document.getElementById("adminMenuModal").style.display = "none";
+}
+
+function openManageArticlesModal() {
+    openManageDropdown();
+}
+
+function closeManageArticlesModal() {
+    document.getElementById("manageArticlesModal").style.display = "none";
+}
+
+function backToAdminMenu() {
+    closeManageArticlesModal();
+    setTimeout(openAccountDropdown, 0);
+}
+
+function closeJournalListModal() {
+    document.getElementById("journalListModal").style.display = "none";
+}
+
+function startNewPublish() {
+    publishReturnView = "admin";
+    closeAdminMenuModal();
+    closeAccountDropdown();
+    openPublishModal();
+}
+
+function showJournalList(mode) {
+    currentListMode = mode;
+    const title = document.getElementById("journalListTitle");
+    const target = document.getElementById("journalList");
+    const isArchive = mode === "archive";
+    const entries = isArchive ? getArchivedJournals() : getVisibleJournalEntries();
+
+    title.innerText = isArchive ? "Archive" : mode === "delete" ? "Select Article to Delete" : "Select Article to Update";
+
+    if (!entries.length) {
+        target.innerHTML = `<div class="journal-list-empty">${isArchive ? "Archive is empty." : "No journals found."}</div>`;
+    } else {
+        target.innerHTML = entries.map(entry => {
+            const actionLabel = mode === "archive" ? "Republish" : mode === "delete" ? "Delete" : "Update";
+            return `
+            <button type="button" onclick="selectJournalFromList('${mode}', '${escapeHTML(entry.id)}', '${escapeHTML(entry.type || "published")}')">
+                ${actionLabel}: ${escapeHTML(entry.title)}
+            </button>
+        `;
+        }).join("");
+    }
+
+    closeAdminMenuModal();
+    closeManageArticlesModal();
+    closeAccountDropdown();
+    document.getElementById("journalListModal").style.display = "flex";
+}
+
+function selectJournalFromList(mode, entryId, entryType) {
+    if (mode === "edit") {
+        const entry = findJournalEntry(entryId, entryType);
+
+        if (!entry) {
+            alert("This journal could not be found.");
+            return;
+        }
+
+        publishReturnView = "manage";
+        closeJournalListModal();
+        openPublishModal(entry);
+        return;
+    }
+
+    if (mode === "delete") {
+        deleteJournalById(entryId, entryType);
+        return;
+    }
+
+    if (mode === "archive") {
+        republishArchivedJournal(entryId);
+    }
+}
+
+function resetPublishForm() {
+    document.getElementById("publishForm").reset();
+    selectedPublishImages = [];
+    selectedPublishImageNames = [];
+    suggestedMapPins = [];
+    editingEntryId = null;
+    editingEntryType = "published";
+    renderImageChoices("mainImageChoices", "mainImageIndex");
+    document.getElementById("pinSuggestions").innerHTML = "Write your journal content, upload images, then click Analyze Map Pins. You can select more than one pin and choose a picture for every pin.";
+}
+
+function openPublishModal(entry = null) {
+    editingEntryId = entry ? entry.id : null;
+    editingEntryType = entry ? entry.type || "published" : "published";
+    document.getElementById("publishModalTitle").innerText = entry ? "Edit Journal" : "Publish Journal";
+    document.getElementById("publishSubmitButton").innerText = entry ? "Update Journal" : "Publish Journal";
+
+    if (entry) {
+        document.getElementById("entryTitle").value = entry.title || "";
+        document.getElementById("entrySubtitle").value = entry.subtitle || "";
+        document.getElementById("entryContent").value = entry.content || "";
+        document.getElementById("tripLocation").value = entry.tripLocation || "";
+        selectedPublishImages = [...(entry.images || [])];
+        selectedPublishImageNames = selectedPublishImages.map((image, index) => `Saved photo ${index + 1}`);
+        suggestedMapPins = Array.isArray(entry.pins) ? entry.pins.map(pin => ({ ...pin })) : [];
+        renderImageChoices("mainImageChoices", "mainImageIndex", entry.mainImageIndex || 0);
+        renderPinSuggestions();
+    } else {
+        resetPublishForm();
+    }
+
+    document.getElementById("publishModal").style.display = "flex";
+    document.getElementById("publishMessage").innerText = "";
+    document.getElementById("entryTitle").focus();
+}
+
+function closePublishModal() {
+    document.getElementById("publishModal").style.display = "none";
+}
+
+function cancelPublishModal() {
+    closePublishModal();
+
+    if (publishReturnView === "manage") {
+        setTimeout(openManageDropdown, 0);
+        return;
+    }
+
+    setTimeout(openAccountDropdown, 0);
+}
+
+function cancelJournalList() {
+    closeJournalListModal();
+    setTimeout(openManageDropdown, 0);
+}
+
+function normalizeText(value) {
+    return String(value || "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+}
+
+function pinMatchesText(pin, text) {
+    return pin.keywords.some(keyword => text.includes(normalizeText(keyword)));
+}
+
+function getPublishSearchText() {
+    return normalizeText([
+        document.getElementById("entryTitle").value,
+        document.getElementById("entrySubtitle").value,
+        document.getElementById("entryContent").value,
+        document.getElementById("tripLocation").value,
+        selectedPublishImageNames.join(" ")
+    ].join(" "));
+}
+
+function imageOptionsHTML(selectedIndex = 0) {
+    if (!selectedPublishImages.length) {
+        return '<option value="0">Upload images first</option>';
+    }
+
+    return selectedPublishImages.map((image, index) => {
+        const name = selectedPublishImageNames[index] || `Photo ${index + 1}`;
+        const selected = index === selectedIndex ? "selected" : "";
+        return `<option value="${index}" ${selected}>Photo ${index + 1}: ${escapeHTML(name)}</option>`;
+    }).join("");
+}
+
+function findBestImageForPin(pin, fallbackIndex) {
+    const pinWords = normalizeText([pin.name, pin.city, ...(pin.keywords || [])].join(" ")).split(" ");
+    const matchedIndex = selectedPublishImageNames.findIndex(name => {
+        const normalizedName = normalizeText(name);
+        return pinWords.some(word => word.length > 3 && normalizedName.includes(word));
+    });
+
+    return matchedIndex >= 0 ? matchedIndex : fallbackIndex;
+}
+
+function suggestPinsFromEntry() {
+    const text = getPublishSearchText();
+    const location = normalizeText(document.getElementById("tripLocation").value);
+    const matches = [];
+    const seen = new Set();
+
+    knownMapPins.forEach(pin => {
+        const locationRelated = !location || normalizeText(pin.city).includes(location) || location.includes(normalizeText(pin.city)) || pinMatchesText(pin, location);
+        const textRelated = pinMatchesText(pin, text) || normalizeText(pin.name).split(" ").every(word => word.length < 3 || text.includes(word));
+
+        if ((locationRelated && textRelated) || pinMatchesText(pin, text)) {
+            const key = `${pin.name}-${pin.city}`;
+            if (!seen.has(key)) {
+                seen.add(key);
+                matches.push({ ...pin });
+            }
+        }
+    });
+
+    if (!matches.length && location) {
+        knownMapPins.forEach(pin => {
+            const sameCity = normalizeText(pin.city).includes(location) || location.includes(normalizeText(pin.city)) || pinMatchesText(pin, location);
+            const key = `${pin.name}-${pin.city}`;
+
+            if (sameCity && !seen.has(key) && matches.length < 6) {
+                seen.add(key);
+                matches.push({ ...pin });
+            }
+        });
+    }
+
+    if (!matches.length) {
+        const fallback = locationFallbackPins.find(pin => pinMatchesText(pin, location) || normalizeText(pin.city).includes(location) || location.includes(normalizeText(pin.city)));
+        if (fallback) matches.push({ ...fallback });
+    }
+
+    return matches.slice(0, 8);
+}
+
+function renderPinSuggestions() {
+    const target = document.getElementById("pinSuggestions");
+
+    if (!suggestedMapPins.length) {
+        target.innerHTML = "No matching map pins found yet. Add a clearer location or mention places like Times Square, Central Park, Hollywood Sign, or Disneyland Castle in the journal text, then analyze again.";
+        return;
+    }
+
+    target.innerHTML = suggestedMapPins.map((pin, index) => {
+        const imageIndex = Number.isInteger(pin.imageIndex) ? pin.imageIndex : findBestImageForPin(pin, index % Math.max(1, selectedPublishImages.length));
+
+        return `
+            <div class="pin-suggestion">
+                <label>
+                    <input type="checkbox" name="suggestedPin" value="${index}" checked>
+                    <span>${escapeHTML(pin.name)} <small>${escapeHTML(pin.city)}</small></span>
+                </label>
+                <select name="pinImageIndex-${index}">
+                    ${imageOptionsHTML(imageIndex)}
+                </select>
+            </div>
+        `;
+    }).join("");
+}
+
+function analyzeMapPins() {
+    suggestedMapPins = suggestPinsFromEntry();
+    renderPinSuggestions();
+}
+
+function findPublishedEntry(entryId) {
+    return getPublishedJournals().find(entry => String(entry.id) === String(entryId));
+}
+
+function findJournalEntry(entryId, entryType) {
+    if (entryType === "published") {
+        const publishedEntry = findPublishedEntry(entryId);
+        return publishedEntry ? { ...publishedEntry, type: "published" } : null;
+    }
+
+    const override = getJournalOverrides()[entryId];
+    if (override) return { ...override, type: "static" };
+
+    const card = Array.from(document.querySelectorAll(".container .card"))
+        .find(item => String(item.dataset.entryId) === String(entryId));
+    return card ? getEntryFromCard(card) : null;
+}
+
+function archiveJournal(entry) {
+    const archive = getArchivedJournals().filter(item => String(item.id) !== String(entry.id));
+    archive.push({
+        ...entry,
+        archivedAt: Date.now()
+    });
+    saveArchivedJournals(archive);
+}
+
+function deleteJournalById(entryId, entryType) {
+    const entry = findJournalEntry(entryId, entryType);
+
+    if (!entry) {
+        alert("This journal could not be found.");
+        return;
+    }
+
+    if (!confirm(`Are you sure you want to delete the whole "${entry.title}" modal? It will move to Archive.`)) {
+        return;
+    }
+
+    archiveJournal(entry);
+
+    if (entryType === "published") {
+        savePublishedJournals(getPublishedJournals().filter(item => String(item.id) !== String(entryId)));
+    } else {
+        const hiddenIds = new Set(getHiddenJournalIds());
+        hiddenIds.add(String(entryId));
+        saveHiddenJournalIds([...hiddenIds]);
+    }
+
+    closeJournalListModal();
+    closeModal();
+    refreshJournalsAndMap();
+}
+
+function republishArchivedJournal(entryId) {
+    const archive = getArchivedJournals();
+    const entry = archive.find(item => String(item.id) === String(entryId));
+
+    if (!entry) {
+        alert("This archived journal could not be found.");
+        return;
+    }
+
+    if (entry.type === "static") {
+        const hiddenIds = getHiddenJournalIds().filter(id => String(id) !== String(entry.id));
+        const overrides = getJournalOverrides();
+        overrides[entry.id] = { ...entry, type: "static" };
+        saveHiddenJournalIds(hiddenIds);
+        saveJournalOverrides(overrides);
+    } else {
+        const entries = getPublishedJournals().filter(item => String(item.id) !== String(entry.id));
+        entries.push({ ...entry, type: undefined });
+        savePublishedJournals(entries);
+    }
+
+    saveArchivedJournals(archive.filter(item => String(item.id) !== String(entryId)));
+    closeJournalListModal();
+    refreshJournalsAndMap();
+}
+
+function continuePendingAdminAction() {
+    if (pendingAdminAction === "edit") {
+        const entry = findPublishedEntry(currentModalEntryId);
+
+        if (!entry) {
+            alert("This published journal could not be found.");
+            return;
+        }
+
+        closeModal();
+        openPublishModal(entry);
+        return;
+    }
+
+    if (pendingAdminAction === "delete") {
+        deleteCurrentJournal();
+        return;
+    }
+
+    openAdminMenuModal();
+}
+
+function handleLogin(event) {
+    event.preventDefault();
+
+    const username = document.getElementById("adminUsername").value.trim();
+    const password = document.getElementById("adminPassword").value;
+
+    if (username !== ADMIN_USERNAME || password !== ADMIN_PASSWORD) {
+        document.getElementById("loginMessage").innerText = "Username or password is incorrect.";
+        return;
+    }
+
+    localStorage.setItem(ADMIN_SESSION_STORAGE_KEY, "true");
+    localStorage.setItem(ADMIN_NAME_STORAGE_KEY, username.charAt(0).toUpperCase() + username.slice(1));
+    updateLoginButton();
+    closeLoginModal();
+    openAccountDropdown();
+}
+
+function logoutAdmin() {
+    localStorage.removeItem(ADMIN_SESSION_STORAGE_KEY);
+    localStorage.removeItem(ADMIN_NAME_STORAGE_KEY);
+    closeAccountDropdown();
+    closeAdminMenuModal();
+    closeManageArticlesModal();
+    closeJournalListModal();
+    closePublishModal();
+    updateLoginButton();
+}
+
+function resizeImageFile(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+
+        reader.onload = function() {
+            const image = new Image();
+
+            image.onload = function() {
+                const maxSize = 1000;
+                const scale = Math.min(1, maxSize / Math.max(image.width, image.height));
+                const width = Math.round(image.width * scale);
+                const height = Math.round(image.height * scale);
+                const canvas = document.createElement("canvas");
+                const context = canvas.getContext("2d");
+
+                canvas.width = width;
+                canvas.height = height;
+                context.drawImage(image, 0, 0, width, height);
+                resolve(canvas.toDataURL("image/jpeg", 0.76));
+            };
+
+            image.onerror = reject;
+            image.src = reader.result;
+        };
+
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+    });
+}
+
+function renderImageChoices(targetId, groupName, selectedIndex = 0) {
+    const target = document.getElementById(targetId);
+
+    if (!selectedPublishImages.length) {
+        target.innerHTML = '<div class="image-choice-empty">Choose images above, then select which one should be the card and modal cover.</div>';
+        return;
+    }
+
+    target.innerHTML = selectedPublishImages.map((image, index) => `
+        <label class="image-choice">
+            <img src="${image}" alt="Selected photo ${index + 1}">
+            <span>
+                <input type="radio" name="${groupName}" value="${index}" ${index === selectedIndex ? "checked" : ""}>
+                Photo ${index + 1}: ${escapeHTML(selectedPublishImageNames[index] || "selected image")}
+            </span>
+        </label>
+    `).join("");
+}
+
+async function handlePublishImages(event) {
+    const files = Array.from(event.target.files || []);
+    const message = document.getElementById("publishMessage");
+
+    if (!files.length) return;
+
+    message.innerText = `Preparing ${files.length} image${files.length === 1 ? "" : "s"}...`;
+
+    try {
+        const previousMainImageIndex = getCheckedImageIndex("mainImageIndex");
+        const resizedImages = await Promise.all(files.map(resizeImageFile));
+        selectedPublishImages = [...selectedPublishImages, ...resizedImages];
+        selectedPublishImageNames = [...selectedPublishImageNames, ...files.map(file => file.name)];
+        suggestedMapPins = [];
+        renderImageChoices("mainImageChoices", "mainImageIndex", previousMainImageIndex);
+        analyzeMapPins();
+        document.getElementById("entryImages").value = "";
+        message.innerText = `${selectedPublishImages.length} image${selectedPublishImages.length === 1 ? "" : "s"} selected. You can choose more files to add more.`;
+    } catch (error) {
+        message.innerText = "Could not read one of the images. Please try again.";
+    }
+}
+
+function clearPublishImages() {
+    selectedPublishImages = [];
+    selectedPublishImageNames = [];
+    suggestedMapPins = [];
+    document.getElementById("entryImages").value = "";
+    renderImageChoices("mainImageChoices", "mainImageIndex");
+    document.getElementById("pinSuggestions").innerHTML = "Write your journal content, upload images, then click Analyze Map Pins. You can select more than one pin and choose a picture for every pin.";
+    document.getElementById("publishMessage").innerText = "Selected images cleared.";
+}
+
+function getCheckedImageIndex(groupName) {
+    const checked = document.querySelector(`input[name="${groupName}"]:checked`);
+    return checked ? Number(checked.value) : 0;
+}
+
+function publishJournal(event) {
+    event.preventDefault();
+
+    const message = document.getElementById("publishMessage");
+
+    if (!selectedPublishImages.length) {
+        message.innerText = "Please add at least one image.";
+        return;
+    }
+
+    if (!suggestedMapPins.length) {
+        analyzeMapPins();
+    }
+
+    const selectedPins = Array.from(document.querySelectorAll('input[name="suggestedPin"]:checked')).map(input => {
+        const pinIndex = Number(input.value);
+        const pin = suggestedMapPins[pinIndex];
+        const imageSelect = document.querySelector(`select[name="pinImageIndex-${pinIndex}"]`);
+
+        return {
+            name: pin.name,
+            city: pin.city,
+            lat: pin.lat,
+            lng: pin.lng,
+            imageIndex: imageSelect ? Number(imageSelect.value) : 0
+        };
+    });
+
+    if (!selectedPins.length && !editingEntryId) {
+        message.innerText = "Please select at least one map pin.";
+        return;
+    }
+
+    const entry = {
+        id: editingEntryId || Date.now(),
+        type: editingEntryType,
+        title: document.getElementById("entryTitle").value.trim(),
+        subtitle: document.getElementById("entrySubtitle").value.trim(),
+        content: document.getElementById("entryContent").value.trim(),
+        tripLocation: document.getElementById("tripLocation").value.trim(),
+        mainImageIndex: getCheckedImageIndex("mainImageIndex"),
+        pins: selectedPins,
+        images: selectedPublishImages
+    };
+
+    if (editingEntryId && editingEntryType === "static") {
+        const overrides = getJournalOverrides();
+        overrides[editingEntryId] = entry;
+
+        try {
+            saveJournalOverrides(overrides);
+        } catch (error) {
+            message.innerText = "This browser could not save the update. Try fewer or smaller photos.";
+            return;
+        }
+
+        resetPublishForm();
+        closePublishModal();
+        refreshJournalsAndMap();
+        return;
+    }
+
+    const entries = getPublishedJournals();
+    const existingIndex = entries.findIndex(item => String(item.id) === String(editingEntryId));
+    const publishedEntry = { ...entry };
+    delete publishedEntry.type;
+
+    if (existingIndex >= 0) {
+        entries[existingIndex] = publishedEntry;
+    } else {
+        entries.push(publishedEntry);
+    }
+
+    try {
+        savePublishedJournals(entries);
+    } catch (error) {
+        message.innerText = "This browser could not save the entry. Try fewer or smaller photos.";
+        return;
+    }
+
+    renderPublishedJournals();
+    initTravelMap();
+    resetPublishForm();
+    closePublishModal();
+}
+
+function requestEditCurrentJournal() {
+    if (!currentModalEntryId) return;
+    openLoginModal("edit");
+}
+
+function requestDeleteCurrentJournal() {
+    if (!currentModalEntryId) return;
+    openLoginModal("delete");
+}
+
+function deleteCurrentJournal() {
+    if (!currentModalEntryId) return;
+
+    const entry = findPublishedEntry(currentModalEntryId);
+    const entryName = entry ? entry.title : "this journal";
+
+    if (!confirm(`Delete "${entryName}"? This will remove the published modal from this browser.`)) {
+        return;
+    }
+
+    const entries = getPublishedJournals().filter(item => String(item.id) !== String(currentModalEntryId));
+    savePublishedJournals(entries);
+    closeModal();
+    currentModalEntryId = null;
+    renderPublishedJournals();
+    initTravelMap();
+}
 
 const mapPlaces = [
     { name: "Lombard Street", city: "San Francisco", lat: 37.8021, lng: -122.4187, photo: "static/sf/WhatsApp Image 2026-06-22 at 10.49.10 PM (2).jpeg" },
@@ -1426,11 +2853,17 @@ function initTravelMap() {
         return;
     }
 
+    if (travelMapInstance) {
+        travelMapInstance.remove();
+        travelMapInstance = null;
+    }
+
     mapElement.innerHTML = "";
 
     const map = L.map("travelMap", {
         scrollWheelZoom: false
     }).setView([38.7, -96], 4);
+    travelMapInstance = map;
 
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
         maxZoom: 19,
@@ -1445,7 +2878,7 @@ function initTravelMap() {
         popupAnchor: [0, -26]
     });
 
-    const markers = mapPlaces.map(place => {
+    const markers = getAllMapPlaces().map(place => {
         const popup = `
             <div class="map-popup">
                 <img src="${place.photo}" alt="${place.name}">
@@ -1460,20 +2893,27 @@ function initTravelMap() {
             .bindPopup(popup);
     });
 
-    const group = L.featureGroup(markers);
-    map.fitBounds(group.getBounds(), { padding: [34, 34] });
+    if (markers.length) {
+        const group = L.featureGroup(markers);
+        map.fitBounds(group.getBounds(), { padding: [34, 34] });
+    }
 }
 
+prepareManagedCards();
+renderPublishedJournals();
+updateLoginButton();
 initTravelMap();
 
 function openBlog(card) {
     const image = card.querySelector("img").src;
     const title = card.querySelector("h3").innerText;
     const story = card.querySelector(".full-story").innerHTML;
+    currentModalEntryId = card.dataset.entryId || null;
 
     document.getElementById("modalImage").src = image;
     document.getElementById("modalTitle").innerText = title;
     document.getElementById("modalText").innerHTML = story;
+    document.getElementById("modalAdminActions").style.display = "none";
 
     document.getElementById("blogModal").style.display = "flex";
     preparePhotoGallery();
@@ -1481,6 +2921,8 @@ function openBlog(card) {
 
 function closeModal() {
     document.getElementById("blogModal").style.display = "none";
+    currentModalEntryId = null;
+    document.getElementById("modalAdminActions").style.display = "none";
 }
 
 function preparePhotoGallery() {
@@ -1530,8 +2972,29 @@ function showNextPhoto(event) {
 }
 
 window.onclick = function(e){
+    const clickedAccountControl = e.target.closest && (e.target.closest("#loginButton") || e.target.closest("#accountDropdown"));
+
+    if (!clickedAccountControl) {
+        closeAccountDropdown();
+    }
+
     if(e.target == document.getElementById("blogModal")){
         closeModal();
+    }
+    if(e.target == document.getElementById("loginModal")){
+        closeLoginModal();
+    }
+    if(e.target == document.getElementById("publishModal")){
+        closePublishModal();
+    }
+    if(e.target == document.getElementById("adminMenuModal")){
+        closeAdminMenuModal();
+    }
+    if(e.target == document.getElementById("manageArticlesModal")){
+        closeManageArticlesModal();
+    }
+    if(e.target == document.getElementById("journalListModal")){
+        closeJournalListModal();
     }
     if(e.target == document.getElementById("photoViewer")){
         closePhotoViewer();
@@ -1539,6 +3002,15 @@ window.onclick = function(e){
 }
 
 document.addEventListener("keydown", function(e){
+    if (e.key === "Escape") {
+        closeLoginModal();
+        closePublishModal();
+        closeAdminMenuModal();
+        closeManageArticlesModal();
+        closeJournalListModal();
+        closeAccountDropdown();
+    }
+
     if (document.getElementById("photoViewer").style.display !== "flex") return;
 
     if (e.key === "ArrowLeft") {
@@ -1572,6 +3044,8 @@ document.getElementById("photoViewer").addEventListener("touchend", function(e){
 document.getElementById("photoViewerImage").onclick = function(e) {
     e.stopPropagation();
 }
+
+document.getElementById("entryImages").addEventListener("change", handlePublishImages);
 </script>
 
 </body>

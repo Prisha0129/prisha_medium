@@ -1683,6 +1683,7 @@ Travel memories captured by Prisha Jain ❤️
             <div id="loginMessage" class="admin-message"></div>
             <div class="admin-actions">
                 <button type="button" class="admin-secondary" onclick="startSignUp()">Create account</button>
+                <button type="button" class="admin-secondary" onclick="startPasswordReset()">Forgot password?</button>
                 <button type="button" class="admin-secondary" onclick="closeLoginModal()">Cancel</button>
                 <button type="submit" class="admin-submit">Login</button>
             </div>
@@ -1888,6 +1889,10 @@ async function loadCloudState() {
         cloudSession = session;
         await checkAdminAccess();
         updateLoginButton();
+
+        if (_event === "PASSWORD_RECOVERY") {
+            setTimeout(finishPasswordReset, 0);
+        }
     });
 
     updateLoginButton();
@@ -2719,6 +2724,39 @@ async function startSignUp() {
 
     const { error } = await supabaseClient.auth.signUp({ email, password });
     message.innerText = error ? error.message : "Account created. Check your email to confirm it, then sign in. Complete the one-time admin step in SETUP.md before publishing.";
+}
+
+async function startPasswordReset() {
+    const email = document.getElementById("adminUsername").value.trim();
+    const message = document.getElementById("loginMessage");
+
+    if (!supabaseClient) {
+        message.innerText = "Cloud login is not configured yet.";
+        return;
+    }
+    if (!email) {
+        message.innerText = "Enter your email address first, then click Forgot password?";
+        return;
+    }
+
+    const { error } = await supabaseClient.auth.resetPasswordForEmail(email, { redirectTo: window.location.href });
+    message.innerText = error ? error.message : "If this email has an account, a password-reset link has been sent.";
+}
+
+async function finishPasswordReset() {
+    const password = window.prompt("Choose your new journal password (at least 14 characters):");
+    if (!password) return;
+    if (password.length < 14) {
+        alert("Please use a password with at least 14 characters. Open the reset email again and try once more.");
+        return;
+    }
+    const confirmPassword = window.prompt("Type the new password again to confirm it:");
+    if (password !== confirmPassword) {
+        alert("The passwords did not match. Open the reset email again and try once more.");
+        return;
+    }
+    const { error } = await supabaseClient.auth.updateUser({ password });
+    alert(error ? `Password could not be changed: ${error.message}` : "Password changed. You can now log in.");
 }
 
 async function logoutAdmin() {

@@ -1673,8 +1673,8 @@ Travel memories captured by Prisha Jain ❤️
         <h2>Journal Login</h2>
         <form class="admin-form" onsubmit="handleLogin(event)">
             <div class="admin-field">
-                <label for="adminUsername">Username</label>
-                <input id="adminUsername" type="text" autocomplete="username" required>
+                <label for="adminUsername">Email address</label>
+                <input id="adminUsername" type="email" autocomplete="email" required>
             </div>
             <div class="admin-field">
                 <label for="adminPassword">Password</label>
@@ -1682,6 +1682,7 @@ Travel memories captured by Prisha Jain ❤️
             </div>
             <div id="loginMessage" class="admin-message"></div>
             <div class="admin-actions">
+                <button type="button" class="admin-secondary" onclick="startSignUp()">Create account</button>
                 <button type="button" class="admin-secondary" onclick="closeLoginModal()">Cancel</button>
                 <button type="submit" class="admin-submit">Login</button>
             </div>
@@ -1788,6 +1789,8 @@ Travel memories captured by Prisha Jain ❤️
 
 <!-- ================= JS ================= -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js"></script>
 <script>
 let currentPhotos = [];
 let currentPhotoIndex = 0;
@@ -1804,14 +1807,122 @@ let editingEntryType = "published";
 let currentListMode = "edit";
 let publishReturnView = "admin";
 
-const ADMIN_USERNAME = "prisha";
-const ADMIN_PASSWORD = "Prisha@2026";
 const PUBLISHED_STORAGE_KEY = "prishaPublishedJournals";
 const JOURNAL_OVERRIDES_STORAGE_KEY = "prishaJournalOverrides";
 const JOURNAL_ARCHIVE_STORAGE_KEY = "prishaJournalArchive";
 const JOURNAL_HIDDEN_STORAGE_KEY = "prishaHiddenJournals";
 const ADMIN_SESSION_STORAGE_KEY = "prishaAdminLoggedIn";
 const ADMIN_NAME_STORAGE_KEY = "prishaAdminName";
+let supabaseClient = null;
+let cloudSession = null;
+let cloudIsAdmin = false;
+let cloudReady = false;
+let cloudSaveTimer = null;
+let loadingCloudState = false;
+
+function initialiseCloud() {
+    if (!window.SUPABASE_URL || !window.SUPABASE_ANON_KEY || !window.supabase || window.SUPABASE_URL.includes("PASTE_") || window.SUPABASE_ANON_KEY.includes("PASTE_")) return;
+    supabaseClient = window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
+}
+
+async function checkAdminAccess() {
+    cloudIsAdmin = false;
+    if (!supabaseClient || !cloudSession?.user) return false;
+    const { data } = await supabaseClient.from("journal_admins").select("user_id").eq("user_id", cloudSession.user.id).maybeSingle();
+    cloudIsAdmin = Boolean(data);
+    return cloudIsAdmin;
+}
+
+function currentCloudState() {
+    return {
+        published: getPublishedJournals(),
+        overrides: getJournalOverrides(),
+        archive: getArchivedJournals(),
+        hidden: getHiddenJournalIds()
+    };
+}
+
+function scheduleCloudSave() {
+    if (loadingCloudState || !cloudReady || !cloudIsAdmin) return;
+    clearTimeout(cloudSaveTimer);
+    cloudSaveTimer = setTimeout(() => saveCloudState(), 350);
+}
+
+async function saveCloudState() {
+    if (!supabaseClient || !cloudIsAdmin) return;
+    const { error } = await supabaseClient
+        .from("journal_app_state")
+        .update({ state: currentCloudState(), updated_at: new Date().toISOString() })
+        .eq("id", "main");
+
+    if (error) {
+        console.error("Cloud save failed:", error.message);
+        const message = document.getElementById("publishMessage");
+        if (message) message.innerText = "Could not save to the cloud. Please check your connection and try again.";
+    }
+}
+
+async function loadCloudState() {
+    if (!supabaseClient) return;
+
+    const [{ data: sessionData }, { data: stateRow, error }] = await Promise.all([
+        supabaseClient.auth.getSession(),
+        supabaseClient.from("journal_app_state").select("state").eq("id", "main").maybeSingle()
+    ]);
+
+    cloudSession = sessionData.session;
+    await checkAdminAccess();
+    cloudReady = !error;
+
+    if (stateRow?.state) {
+        const state = stateRow.state;
+        loadingCloudState = true;
+        localStorage.setItem(PUBLISHED_STORAGE_KEY, JSON.stringify(state.published || []));
+        localStorage.setItem(JOURNAL_OVERRIDES_STORAGE_KEY, JSON.stringify(state.overrides || {}));
+        localStorage.setItem(JOURNAL_ARCHIVE_STORAGE_KEY, JSON.stringify(state.archive || []));
+        localStorage.setItem(JOURNAL_HIDDEN_STORAGE_KEY, JSON.stringify(state.hidden || []));
+        loadingCloudState = false;
+    }
+
+    supabaseClient.auth.onAuthStateChange(async (_event, session) => {
+        cloudSession = session;
+        await checkAdminAccess();
+        updateLoginButton();
+    });
+
+    updateLoginButton();
+    refreshJournalsAndMap();
+}
+
+async function uploadJournalImages(images) {
+    const uploadedImages = [];
+    const message = document.getElementById("publishMessage");
+
+    for (let index = 0; index < images.length; index += 1) {
+        const image = images[index];
+        if (!String(image).startsWith("data:")) {
+            uploadedImages.push(image);
+            continue;
+        }
+
+        if (!supabaseClient || !cloudIsAdmin) {
+            message.innerText = "Please sign in with your approved account before uploading photos.";
+            return null;
+        }
+
+        const response = await fetch(image);
+        const blob = await response.blob();
+        const path = `journals/${Date.now()}-${crypto.randomUUID()}-${index}.jpg`;
+        const { error } = await supabaseClient.storage.from("journal-images").upload(path, blob, { contentType: "image/jpeg", upsert: false });
+        if (error) {
+            message.innerText = `Could not upload photo ${index + 1}: ${error.message}`;
+            return null;
+        }
+        uploadedImages.push(supabaseClient.storage.from("journal-images").getPublicUrl(path).data.publicUrl);
+    }
+
+    return uploadedImages;
+}
 
 const knownMapPins = [
     { name: "Times Square", city: "New York", lat: 40.7580, lng: -73.9855, keywords: ["times square", "time square", "broadway"] },
@@ -1904,6 +2015,7 @@ function getPublishedJournals() {
 
 function savePublishedJournals(entries) {
     localStorage.setItem(PUBLISHED_STORAGE_KEY, JSON.stringify(entries));
+    scheduleCloudSave();
 }
 
 function getStoredList(key) {
@@ -1916,6 +2028,7 @@ function getStoredList(key) {
 
 function saveStoredList(key, entries) {
     localStorage.setItem(key, JSON.stringify(entries));
+    scheduleCloudSave();
 }
 
 function getJournalOverrides() {
@@ -1928,6 +2041,7 @@ function getJournalOverrides() {
 
 function saveJournalOverrides(overrides) {
     localStorage.setItem(JOURNAL_OVERRIDES_STORAGE_KEY, JSON.stringify(overrides));
+    scheduleCloudSave();
 }
 
 function getArchivedJournals() {
@@ -2127,11 +2241,11 @@ function getAllMapPlaces() {
 }
 
 function isAdminLoggedIn() {
-    return localStorage.getItem(ADMIN_SESSION_STORAGE_KEY) === "true";
+    return Boolean(cloudSession && cloudIsAdmin);
 }
 
 function getAdminName() {
-    return localStorage.getItem(ADMIN_NAME_STORAGE_KEY) || "Prisha";
+    return cloudSession?.user?.email?.split("@")[0] || "Prisha";
 }
 
 function updateLoginButton() {
@@ -2559,27 +2673,57 @@ function continuePendingAdminAction() {
     openAdminMenuModal();
 }
 
-function handleLogin(event) {
+async function handleLogin(event) {
     event.preventDefault();
 
     const username = document.getElementById("adminUsername").value.trim();
     const password = document.getElementById("adminPassword").value;
 
-    if (username !== ADMIN_USERNAME || password !== ADMIN_PASSWORD) {
-        document.getElementById("loginMessage").innerText = "Username or password is incorrect.";
+    if (!supabaseClient) {
+        document.getElementById("loginMessage").innerText = "Cloud login is not configured yet. Add your Supabase project details to supabase-config.js.";
         return;
     }
 
-    localStorage.setItem(ADMIN_SESSION_STORAGE_KEY, "true");
-    localStorage.setItem(ADMIN_NAME_STORAGE_KEY, username.charAt(0).toUpperCase() + username.slice(1));
+    const { data, error } = await supabaseClient.auth.signInWithPassword({ email: username, password });
+    if (error) {
+        document.getElementById("loginMessage").innerText = error.message;
+        return;
+    }
+
+    cloudSession = data.session;
+    await checkAdminAccess();
+    if (!cloudIsAdmin) {
+        await supabaseClient.auth.signOut();
+        cloudSession = null;
+        document.getElementById("loginMessage").innerText = "This account is not approved to edit the journal yet. Complete the one-time admin step in SETUP.md.";
+        return;
+    }
     updateLoginButton();
     closeLoginModal();
     openAccountDropdown();
 }
 
-function logoutAdmin() {
-    localStorage.removeItem(ADMIN_SESSION_STORAGE_KEY);
-    localStorage.removeItem(ADMIN_NAME_STORAGE_KEY);
+async function startSignUp() {
+    const email = document.getElementById("adminUsername").value.trim();
+    const password = document.getElementById("adminPassword").value;
+    const message = document.getElementById("loginMessage");
+
+    if (!supabaseClient) {
+        message.innerText = "Cloud login is not configured yet.";
+        return;
+    }
+    if (!email || !password) {
+        message.innerText = "Enter your email and a strong password first.";
+        return;
+    }
+
+    const { error } = await supabaseClient.auth.signUp({ email, password });
+    message.innerText = error ? error.message : "Account created. Check your email to confirm it, then sign in. Complete the one-time admin step in SETUP.md before publishing.";
+}
+
+async function logoutAdmin() {
+    if (supabaseClient) await supabaseClient.auth.signOut();
+    cloudSession = null;
     closeAccountDropdown();
     closeAdminMenuModal();
     closeManageArticlesModal();
@@ -2675,7 +2819,7 @@ function getCheckedImageIndex(groupName) {
     return checked ? Number(checked.value) : 0;
 }
 
-function publishJournal(event) {
+async function publishJournal(event) {
     event.preventDefault();
 
     const message = document.getElementById("publishMessage");
@@ -2708,6 +2852,10 @@ function publishJournal(event) {
         return;
     }
 
+    message.innerText = "Saving journal securely...";
+    const cloudImages = supabaseClient ? await uploadJournalImages(selectedPublishImages) : selectedPublishImages;
+    if (!cloudImages) return;
+
     const entry = {
         id: editingEntryId || Date.now(),
         type: editingEntryType,
@@ -2717,7 +2865,7 @@ function publishJournal(event) {
         tripLocation: document.getElementById("tripLocation").value.trim(),
         mainImageIndex: getCheckedImageIndex("mainImageIndex"),
         pins: selectedPins,
-        images: selectedPublishImages
+        images: cloudImages
     };
 
     if (editingEntryId && editingEntryType === "static") {
@@ -2726,6 +2874,7 @@ function publishJournal(event) {
 
         try {
             saveJournalOverrides(overrides);
+            await saveCloudState();
         } catch (error) {
             message.innerText = "This browser could not save the update. Try fewer or smaller photos.";
             return;
@@ -2755,6 +2904,7 @@ function publishJournal(event) {
         return;
     }
 
+    await saveCloudState();
     renderPublishedJournals();
     initTravelMap();
     resetPublishForm();
@@ -2903,6 +3053,8 @@ prepareManagedCards();
 renderPublishedJournals();
 updateLoginButton();
 initTravelMap();
+initialiseCloud();
+loadCloudState();
 
 function openBlog(card) {
     const image = card.querySelector("img").src;

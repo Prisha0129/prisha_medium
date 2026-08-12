@@ -1820,6 +1820,7 @@ let cloudIsAdmin = false;
 let cloudReady = false;
 let cloudSaveTimer = null;
 let loadingCloudState = false;
+let passwordResetPromptOpen = false;
 
 function initialiseCloud() {
     if (!window.SUPABASE_URL || !window.SUPABASE_ANON_KEY || !window.supabase || window.SUPABASE_URL.includes("PASTE_") || window.SUPABASE_ANON_KEY.includes("PASTE_")) return;
@@ -1897,6 +1898,11 @@ async function loadCloudState() {
 
     updateLoginButton();
     refreshJournalsAndMap();
+
+    // The recovery event may occur before the listener is ready after an email redirect.
+    if (window.location.hash.includes("type=recovery")) {
+        setTimeout(finishPasswordReset, 0);
+    }
 }
 
 async function uploadJournalImages(images) {
@@ -2744,19 +2750,28 @@ async function startPasswordReset() {
 }
 
 async function finishPasswordReset() {
+    if (passwordResetPromptOpen) return;
+    passwordResetPromptOpen = true;
     const password = window.prompt("Choose your new journal password (at least 14 characters):");
-    if (!password) return;
+    if (!password) {
+        passwordResetPromptOpen = false;
+        return;
+    }
     if (password.length < 14) {
         alert("Please use a password with at least 14 characters. Open the reset email again and try once more.");
+        passwordResetPromptOpen = false;
         return;
     }
     const confirmPassword = window.prompt("Type the new password again to confirm it:");
     if (password !== confirmPassword) {
         alert("The passwords did not match. Open the reset email again and try once more.");
+        passwordResetPromptOpen = false;
         return;
     }
     const { error } = await supabaseClient.auth.updateUser({ password });
     alert(error ? `Password could not be changed: ${error.message}` : "Password changed. You can now log in.");
+    if (!error) history.replaceState({}, document.title, window.location.pathname);
+    passwordResetPromptOpen = false;
 }
 
 async function logoutAdmin() {

@@ -758,6 +758,7 @@ body::before {
     display: grid;
     gap: 7px;
     padding: 8px;
+    position: relative;
     border-radius: 8px;
     border: 1px solid rgba(216, 93, 135, 0.16);
     background: linear-gradient(135deg, #fff8fb, #f1fbff);
@@ -777,6 +778,28 @@ body::before {
     gap: 6px;
     font-size: 12px;
     color: var(--muted);
+}
+
+.image-remove-button {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    width: 30px;
+    height: 30px;
+    border: 0;
+    border-radius: 50%;
+    background: rgba(255, 240, 246, 0.96);
+    color: var(--rose);
+    font-size: 25px;
+    line-height: 1;
+    cursor: pointer;
+    box-shadow: 0 3px 10px rgba(216, 93, 135, 0.18);
+}
+
+.image-remove-button:hover,
+.image-remove-button:focus-visible {
+    background: var(--rose);
+    color: white;
 }
 
 .image-choice-empty,
@@ -2824,14 +2847,39 @@ function renderImageChoices(targetId, groupName, selectedIndex = 0) {
     }
 
     target.innerHTML = selectedPublishImages.map((image, index) => `
-        <label class="image-choice">
+        <div class="image-choice">
+            <button type="button" class="image-remove-button" onclick="removePublishImage(${index}, event)" aria-label="Remove photo ${index + 1}" title="Remove this photo">&times;</button>
             <img src="${image}" alt="Selected photo ${index + 1}">
-            <span>
+            <label>
                 <input type="radio" name="${groupName}" value="${index}" ${index === selectedIndex ? "checked" : ""}>
-                Photo ${index + 1}: ${escapeHTML(selectedPublishImageNames[index] || "selected image")}
-            </span>
-        </label>
+                <span>Photo ${index + 1}: ${escapeHTML(selectedPublishImageNames[index] || "selected image")}</span>
+            </label>
+        </div>
     `).join("");
+}
+
+function removePublishImage(index, event) {
+    event.stopPropagation();
+    const previousMainImageIndex = getCheckedImageIndex("mainImageIndex");
+
+    suggestedMapPins = suggestedMapPins.map((pin, pinIndex) => {
+        const imageSelect = document.querySelector(`select[name="pinImageIndex-${pinIndex}"]`);
+        const imageIndex = imageSelect ? Number(imageSelect.value) : (Number.isInteger(pin.imageIndex) ? pin.imageIndex : 0);
+        if (imageIndex > index) return { ...pin, imageIndex: imageIndex - 1 };
+        if (imageIndex === index) return { ...pin, imageIndex: Math.max(0, Math.min(index, selectedPublishImages.length - 2)) };
+        return { ...pin, imageIndex };
+    });
+
+    selectedPublishImages.splice(index, 1);
+    selectedPublishImageNames.splice(index, 1);
+
+    const nextMainImageIndex = previousMainImageIndex > index
+        ? previousMainImageIndex - 1
+        : Math.min(previousMainImageIndex, Math.max(0, selectedPublishImages.length - 1));
+
+    renderImageChoices("mainImageChoices", "mainImageIndex", nextMainImageIndex);
+    renderPinSuggestions();
+    document.getElementById("publishMessage").innerText = `Photo ${index + 1} removed. ${selectedPublishImages.length} photo${selectedPublishImages.length === 1 ? "" : "s"} remaining.`;
 }
 
 async function handlePublishImages(event) {
